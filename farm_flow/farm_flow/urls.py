@@ -15,7 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from . import views  # Import views from the current app
+from ffapp import views  # Import views from your app (replace 'ffapp' with your actual app name)
+
 
 urlpatterns = [
     path('register_customer/', views.register_c, name='register_customer'),  # Endpoint for customer registration
