@@ -57,15 +57,23 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Buyer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     deliveryAdress=models.CharField()
+    #ABM -> added by Moldir
+    payment_method = models.CharField(max_length=50, null=True, blank=True)
    
 
 
 class Farmer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    #Q -> do we really need it?
     Fname=models.CharField()
+    #ABM
+    farm_location = models.CharField(max_length=255, default="Unknown farm location", null=True, blank=True)
+    verified = models.BooleanField(default=False)
+
 
 
 class OTP(models.Model):
+    #Q -> should not we also add email verification?
     phone_number = models.CharField(max_length=15)
     otp = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -13,7 +13,7 @@ class FarmerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Farmer
-        fields = ['id', 'user', 'Fname']
+        fields = ['id', 'user', 'verified'] #last one can be deleted ig
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
@@ -26,7 +26,7 @@ class BuyerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Buyer
-        fields = ['id', 'user', 'deliveryAdress']
+        fields = ['id', 'user', 'deliveryAdress', 'payment_method']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')

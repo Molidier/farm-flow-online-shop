@@ -15,13 +15,13 @@ from django.contrib.auth import authenticate
 @api_view(['POST'])
 def register_c(request):
     #if request.method == 'POST':
-        name = request.POST['name']
+        firstname = request.POST['firstname']
+        secondname = request.POST['secondname']
         email = request.POST['email']
         phoneNumber = request.POST['phoneNumber']
         deliveryAddress = request.POST['deliveryAddress']
-        paymentMethod = request.POST['paymentMethod']
 
-        if not all([name, email, phoneNumber, deliveryAddress, paymentMethod]):
+        if not all([firstname, secondname, email, phoneNumber, deliveryAddress, paymentMethod]):
             # Checks if any of the variables (username, password, email) is missing or empty.
             # `all()` returns True only if all elements in the list are non-empty and non-None.
             # If any field is missing, it returns a JSON response with an error message.
@@ -29,11 +29,11 @@ def register_c(request):
             return Response({'error': 'Missing fields'}, status=status.HTTP_400_BAD_REQUEST)
 
         # If all fields are provided, proceed to create a new user
-        user = User.objects.create_user(name=name, 
+        user = User.objects.create_user(firstname=firstname,
+                                        secondname = secondname, 
                                         email=email,
                                         phoneNumber=phoneNumber, 
                                         deliveryAddress=deliveryAddress, 
-                                        paymentMethod = paymentMethod
                                         )
         # `create_user` is a Django helper method that creates a new user object with the provided
         # username, password, and email, and then saves it to the database.
@@ -67,9 +67,8 @@ def register_f(request):
         secondname = request.POST['secondname']
         fnumber = request.POST['fnumber']
         femail = request.POST['femail']
-        farmloc = request.POST['farmloc']
 
-        if not all([firstname, secondname, fnumber, femail, farmloc]):
+        if not all([firstname, secondname, fnumber, femail]):
             # Checks if any of the variables (username, password, email) is missing or empty.
             # `all()` returns True only if all elements in the list are non-empty and non-None.
             # If any field is missing, it returns a JSON response with an error message.
@@ -81,7 +80,6 @@ def register_f(request):
                                         secondname = secondname,
                                         fnumber = fnumber,
                                         femail = femail,
-                                        farmloc = farmloc
                                         )
         # `create_user` is a Django helper method that creates a new user object with the provided
         # username, password, and email, and then saves it to the database.
@@ -95,7 +93,6 @@ def register_f(request):
         # `Token.objects.create()` is used to create an authentication token that can be returned to
         # the mobile app, allowing the user to authenticate future requests.
                                         
-        
         '''
             login(request, user) # automatically login user after registration
             messages.success(request, 'Registration successful!') #Display a success message 
