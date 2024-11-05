@@ -13,6 +13,25 @@ from datetime import timedelta
 
 from pathlib import Path
 
+#API KEY
+import os
+import environ
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Initialize environment variables
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# Load the API key
+FARM_FLOW_API_KEY = env("FARM_FLOW_API_KEY", default=None)
+
+
+
+
+
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
