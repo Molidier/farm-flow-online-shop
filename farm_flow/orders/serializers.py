@@ -4,18 +4,26 @@ from users.models import Buyer
 from products.models import Product
 
 
-class OrdersSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Orders
-        fields = ['id', 'buyer', 'order_date', 'order_status', 'total_amount']
-        read_only_fields = ['id']
+from rest_framework import serializers
+from .models import Orders, OrderProduct, Payment, Delivery
+from products.serializers import ProductSerializer
 
-
+# Serializer for OrderProduct details within each order
 class OrderProductSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)  # Include product details
+
     class Meta:
         model = OrderProduct
-        fields = ['id', 'order', 'product', 'quantity_ordered', 'price_at_purchase']
-        read_only_fields = ['id']
+        fields = ['id', 'product', 'quantity_ordered', 'price_at_purchase']
+
+
+# Orders Serializer to include nested order product details
+class OrdersSerializer(serializers.ModelSerializer):
+    order_products = OrderProductSerializer(source='orderproduct_set', many=True, read_only=True)  # Nested product details
+
+    class Meta:
+        model = Orders
+        fields = ['id', 'buyer', 'order_date', 'order_status', 'total_amount', 'order_products']
 
 
 class PaymentSerializer(serializers.ModelSerializer):

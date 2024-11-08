@@ -53,16 +53,18 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["email", "first_name", "last_name"]
 
 
-
+    
 class Buyer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    deliveryAdress=models.CharField()
+    deliveryAdress= models.CharField(max_length=255, default="Default Address")
+
    
 
 
 class Farmer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     Fname=models.CharField()
+    is_verified=models.BooleanField(default=False)
 
 
 class OTP(models.Model):
@@ -72,4 +74,3 @@ class OTP(models.Model):
 
     def is_valid(self):
         return (timezone.now() - self.created_at) < timedelta(minutes=5)
-

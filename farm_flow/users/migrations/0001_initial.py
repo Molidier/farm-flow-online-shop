@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
             name='Buyer',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('deliveryAdress', models.CharField()),
+                ('delivery_address', models.CharField(max_length=255)),  # Updated field name and added max_length
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
             name='Farmer',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('Fname', models.CharField()),
+                ('first_name', models.CharField(max_length=60)),  # Updated field name and added max_length
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
