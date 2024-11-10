@@ -93,24 +93,27 @@ class FarmerInventoryListCreateView(APIView):
             return Response({"error": "Farm not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, *args, **kwargs):
+        farm_id = request.data.get("farm")  # get farm ID from request data
         try:
-            farm = Farm.objects.get(farmer=request.user.farmer)
-            data = request.data.copy()
-            data['farm'] = farm.id
-            logger.info(f"Attempting to create inventory item for farm ID: {farm.id}")
-            
-            serializer = InventorySerializer(data=data)
-            if serializer.is_valid():
-                serializer.save()
-                logger.info("Inventory item created successfully")
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            
-            logger.warning("Failed to create inventory item due to validation errors")
-            logger.debug(serializer.errors)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            # Verify that the farm belongs to the authenticated farmer
+            farm = Farm.objects.get(id=farm_id, farmer=request.user.farmer)
         except Farm.DoesNotExist:
-            logger.warning(f"Farm not found for farmer ID: {request.user.farmer.id}")
-            return Response({"error": "Farm not found"}, status=status.HTTP_404_NOT_FOUND)
+            logger.warning(f"Invalid farm ID: {farm_id} for farmer ID: {request.user.farmer.id}")
+            return Response({"error": "Invalid farm selection"}, status=status.HTTP_400_BAD_REQUEST)
+
+        data = request.data.copy()
+        data["farm"] = farm.id
+        logger.info(f"Attempting to create inventory item for farm ID: {farm.id}")
+
+        serializer = InventorySerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            logger.info("Inventory item created successfully")
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        logger.warning("Failed to create inventory item due to validation errors")
+        logger.debug(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # View to retrieve, update, or delete a specific inventory item
 class InventoryDetailUpdateDeleteView(APIView):
@@ -128,9 +131,13 @@ class InventoryDetailUpdateDeleteView(APIView):
 
     def put(self, request, pk, *args, **kwargs):
         try:
+            # Retrieve the inventory item with the given `pk` that belongs to a farm owned by the current farmer
             inventory_item = Inventory.objects.get(pk=pk, farm__farmer=request.user.farmer)
             data = request.data.copy()
-            data['farm'] = request.user.farmer.farm.id
+            
+            # Set `farm` in the request data to the farm associated with the inventory item
+            data['farm'] = inventory_item.farm.id
+            
             logger.info(f"Updating inventory item ID: {pk} for farm ID: {data['farm']}")
             
             serializer = InventorySerializer(inventory_item, data=data, partial=True)
@@ -142,6 +149,7 @@ class InventoryDetailUpdateDeleteView(APIView):
             logger.warning("Failed to update inventory item due to validation errors")
             logger.debug(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
         except Inventory.DoesNotExist:
             logger.warning(f"Inventory item ID: {pk} not found for farmer ID: {request.user.farmer.id}")
             return Response({"error": "Inventory item not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -224,3 +232,13 @@ class FarmDetailUpdateDeleteAPIView(APIView):
         except Farm.DoesNotExist:
             logger.warning(f"Farm ID: {pk} not found for farmer ID: {request.user.farmer.id}")
             return Response({"error": "Farm not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+# Endpoint to get the list of farms for the authenticated farmer
+class FarmerFarmListAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsFarmer]
+
+    def get(self, request, *args, **kwargs):
+        farms = Farm.objects.filter(farmer=request.user.farmer)
+        serializer = FarmSerializer(farms, many=True)
+        logger.info(f"Retrieved farm list for farmer ID: {request.user.farmer.id}")
+        return Response(serializer.data, status=status.HTTP_200_OK)

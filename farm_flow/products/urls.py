@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     ProductCreateAPIView, ProductDetailAPIView, 
     FarmerInventoryListCreateView, InventoryDetailUpdateDeleteView,
-    FarmListCreateAPIView, FarmDetailUpdateDeleteAPIView
+    FarmListCreateAPIView, FarmDetailUpdateDeleteAPIView, FarmerFarmListAPIView
 )
 
 urlpatterns = [
@@ -12,4 +12,5 @@ urlpatterns = [
     path('inventory/<int:pk>/', InventoryDetailUpdateDeleteView.as_view(), name='inventory-detail'),
     path('farm/', FarmListCreateAPIView.as_view(), name='farm-create-list'),  # Endpoint to create and list farms
     path('farm/<int:pk>/', FarmDetailUpdateDeleteAPIView.as_view(), name='farm-detail'),  # Endpoint to retrieve, update, or delete a farm
+    path('farms/', FarmerFarmListAPIView.as_view(), name='farmer-farm-list')  # Additional endpoint
 ]

@@ -43,17 +43,29 @@ class InventorySerializer(serializers.ModelSerializer):
         # Fields to be serialized for the Inventory model, including the product name and total value
         fields = ['id', 'farm', 'product', 'product_name', 'quantity', 'availability', 'total_value']
         # Make `id`, `farm`, and `product_name` read-only
-        read_only_fields = ['id', 'farm', 'product_name', 'total_value']
+        read_only_fields = ['id', 'product_name', 'total_value']
 
     def get_total_value(self, obj):
         # Calculates total value as quantity * price
         return obj.quantity * obj.product.price if obj.product else 0
 
     def validate(self, data):
-        # Custom validation to ensure the product belongs to the specified farm
-        if 'product' in data and data['product'].farm != self.instance.farm:
-            raise serializers.ValidationError("The product must belong to the same farm.")
+        # Retrieve product and farm from data or instance
+        product = data.get('product')
+        farm = data.get('farm', getattr(self.instance, 'farm', None))
+
+        # Ensure both product and farm are provided
+        if product is None:
+            raise serializers.ValidationError({"product": "This field is required."})
+        if farm is None:
+            raise serializers.ValidationError({"farm": "This field is required."})
+
+        # Check that the product belongs to the specified farm
+        if product.farm != farm:
+            raise serializers.ValidationError("The product must belong to the specified farm.")
+
         return data
+
 
 
 # Cart Serializer
