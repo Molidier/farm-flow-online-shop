@@ -4,7 +4,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
 from datetime import datetime, timedelta
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class UserManager(BaseUserManager):
@@ -37,7 +38,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         ("buyer", "Buyer"),
     ]
 
-
     first_name = models.CharField(max_length=60)
     last_name = models.CharField(max_length=60)
     email = models.EmailField(unique=True)
@@ -53,18 +53,23 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["email", "first_name", "last_name"]
 
 
-    
 class Buyer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    deliveryAdress= models.CharField(max_length=255, default="Default Address")
-
-   
+    deliveryAdress = models.CharField(max_length=255, default="Default Address")
 
 
 class Farmer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    Fname=models.CharField()
-    is_verified=models.BooleanField(default=False)
+    Fname = models.CharField(max_length=60)
+    #is_verified = models.BooleanField(default=False)
+
+
+# Signal to set `is_active` to False for farmers
+@receiver(post_save, sender=Farmer)
+def set_farmer_inactive(sender, instance, created, **kwargs):
+    if created:
+        instance.user.is_active = False
+        instance.user.save()
 
 
 class OTP(models.Model):

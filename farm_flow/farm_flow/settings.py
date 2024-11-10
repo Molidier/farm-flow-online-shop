@@ -35,13 +35,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "debug_toolbar",
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
     "ffapp",
     "users",
     "orders",
-    "products"
+    "products",
 ]
 
 MIDDLEWARE = [
@@ -53,7 +54,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "farm_flow.urls"
@@ -104,7 +105,7 @@ password: AVNS_rAufI3FoPxaQsyguzJN
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",  # Use the PostgreSQL backend
-        "NAME": "defaultdb",  # Name of the database
+        "NAME": "back_up",  # Name of the database
         "USER": "avnadmin",  # Username provided by Aiven
         "PASSWORD": "AVNS_rAufI3FoPxaQsyguzJN",  # Replace with the actual password
         "HOST": "team-f-nu-fa60.h.aivencloud.com",  # Aiven host
