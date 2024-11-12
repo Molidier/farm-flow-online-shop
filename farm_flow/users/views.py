@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .models import Farmer, Buyer, User
-from .serializers import FarmerSerializer, BuyerSerializer, UserSerializer  # Use UserSerializer instead
+from .serializers import FarmerSerializer, BuyerSerializer, UserSerializer
 
 # Register a new farmer
 class RegisterFarmerAPIView(APIView):
@@ -78,7 +78,7 @@ class BuyerUserPageView(APIView):
         # Retrieve the buyer profile linked to the authenticated user
         try:
             buyer = Buyer.objects.get(user=request.user)
-            serializer = UserSerializer(buyer.user)  # Use UserSerializer for buyer's user info
+            serializer = BuyerSerializer(buyer)  # Use BuyerSerializer to include deliveryAdress
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Buyer.DoesNotExist:
             return Response({"error": "Buyer profile not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -92,7 +92,7 @@ class BuyerUserPageView(APIView):
         try:
             buyer = Buyer.objects.get(user=request.user)
             # Partially update the buyer's user data
-            serializer = UserSerializer(buyer.user, data=request.data, partial=True)
+            serializer = BuyerSerializer(buyer, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()  # Save the updated information if valid
                 return Response(serializer.data, status=status.HTTP_200_OK)
