@@ -3,10 +3,10 @@ from .models import User, Farmer, Buyer
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    
     class Meta:
         model = User
         fields = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'password']
-        
 
 class FarmerSerializer(serializers.ModelSerializer):
     user = UserSerializer()
@@ -33,3 +33,22 @@ class BuyerSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**user_data, role="buyer")  # Set role to "buyer"
         buyer = Buyer.objects.create(user=user, **validated_data)
         return buyer
+
+    def update(self, instance, validated_data):
+        # Extract and handle user data separately
+        user_data = validated_data.pop('user', None)
+        
+        if user_data:
+            # Access the User instance related to the Buyer
+            user = instance.user
+            # Update fields on the User instance
+            for attr, value in user_data.items():
+                setattr(user, attr, value)
+            user.save()  # Save User with updated fields
+
+        # Update remaining Buyer fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        
+        return instance
