@@ -64,11 +64,18 @@ class Farmer(models.Model):
     verified = models.BooleanField(default=False)
 
 # Proxy model for Verified Farmers
-class VerifiedFarmer(Farmer):
+class ApprovedFarmer(Farmer):
     class Meta:
         proxy = True
-        verbose_name = "Verified Farmer"
-        verbose_name_plural = "Verified Farmers"
+        verbose_name = "Approved Farmer"
+        verbose_name_plural = "Approved Farmers"
+
+# Proxy model for Verified Farmers
+class RejectedFarmer(Farmer):
+    class Meta:
+        proxy = True
+        verbose_name = "Rejected Farmer"
+        verbose_name_plural = "Rejected Farmers"
 
 # Proxy model for Unverified Farmers
 class PendingFarmer(Farmer):
@@ -83,7 +90,6 @@ def set_farmer_inactive(sender, instance, created, **kwargs):
     if created:
         instance.user.is_active = False
         instance.user.save()
-
 
 class OTP(models.Model):
     phone_number = models.CharField(max_length=15)

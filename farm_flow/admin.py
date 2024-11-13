@@ -1,6 +1,6 @@
 from django.contrib.admin import AdminSite
-from users.models import Buyer, VerifiedFarmer, PendingFarmer, User
-from users.admin import BuyerAdmin, VerifiedFarmerAdmin, PendingFarmerAdmin, UserAdmin
+from users.models import Buyer, ApprovedFarmer, PendingFarmer, User, RejectedFarmer
+from users.admin import BuyerAdmin, ApprovedFarmerAdmin, PendingFarmerAdmin, UserAdmin, RejectedFarmerAdmin
 
 # Create a custom AdminSite
 class CustomAdminSite(AdminSite):
@@ -12,9 +12,10 @@ class CustomAdminSite(AdminSite):
         # Define the order for models
         ordering = {
             "Buyers": 1,
-            "Verified Farmers": 2,
-            "Pending Farmers": 3,
-            "Users": 4
+            "Pending Farmers": 2,
+            "Approved Farmers": 3,
+            "Rejected Farmers": 4,
+            "Users": 5
         }
 
         # Build the app dictionary
@@ -34,5 +35,6 @@ custom_admin_site = CustomAdminSite(name='custom_admin')
 
 custom_admin_site.register(User, UserAdmin)
 custom_admin_site.register(Buyer, BuyerAdmin)
-custom_admin_site.register(VerifiedFarmer, VerifiedFarmerAdmin)
 custom_admin_site.register(PendingFarmer, PendingFarmerAdmin)
+custom_admin_site.register(ApprovedFarmer, ApprovedFarmerAdmin)
+custom_admin_site.register(RejectedFarmer, RejectedFarmerAdmin)

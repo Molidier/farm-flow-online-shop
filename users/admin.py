@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.utils.html import format_html
 from django.shortcuts import redirect
-from .models import PendingFarmer, VerifiedFarmer
+from .models import Farmer, PendingFarmer, ApprovedFarmer
 from django.contrib import messages
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from rest_framework.authtoken.models import TokenProxy
@@ -39,7 +39,7 @@ class BuyerAdmin(admin.ModelAdmin):
     search_fields = ('user__phone_number', 'user__email', 'deliveryAdress')
 
 class BaseFarmerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'Fname', 'get_farm_location', 'get_farm_passport', 'verified')
+    list_display = ('user', 'Fname', 'get_farm_location', 'get_farm_passport', 'get_is_active')
     search_fields = ('user__phone_number', 'user__email', 'Fname')
 
     # Common methods to display related Farm information
@@ -51,13 +51,23 @@ class BaseFarmerAdmin(admin.ModelAdmin):
         return obj.farm.farm_passport if hasattr(obj, 'farm') else 'No size'
     get_farm_passport.short_description = 'Farm Passport'
 
-class VerifiedFarmerAdmin(BaseFarmerAdmin):
+    def get_is_active(self, obj):
+        return obj.user.is_active
+    get_is_active.short_description = 'Active'
+    get_is_active.boolean = True
+
+class ApprovedFarmerAdmin(BaseFarmerAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.filter(verified=True)
+    
+class RejectedFarmerAdmin(BaseFarmerAdmin):
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.filter(verified=False, user__is_active=False)
 
 class PendingFarmerAdmin(BaseFarmerAdmin):
-    list_display = ('user', 'Fname', 'get_farm_location', 'get_farm_passport', 'approve_button', 'reject_button')
+    list_display = BaseFarmerAdmin.list_display +  ('approve_button', 'reject_button')
      # Approve button
     def approve_button(self, obj):
         return format_html(
@@ -87,23 +97,26 @@ class PendingFarmerAdmin(BaseFarmerAdmin):
 
     # Approve action
     def approve_farmer(self, request, farmer_id):
-        farmer = PendingFarmer.objects.get(id=farmer_id)
+        farmer = Farmer.objects.get(id=farmer_id)
         farmer.verified = True
+        farmer.user.is_active = True
         farmer.save()
         messages.success(request, f"Farmer {farmer.Fname} has been approved.")
         return redirect(request.META.get('HTTP_REFERER'))
 
     # Reject action
     def reject_farmer(self, request, farmer_id):
-        farmer = PendingFarmer.objects.get(id=farmer_id)
+        farmer = Farmer.objects.get(id=farmer_id)
         farmer.verified = False
+        farmer.user.is_active = False
         farmer.save()
+        farmer.user.save()
         messages.success(request, f"Farmer {farmer.Fname} has been rejected.")
         return redirect(request.META.get('HTTP_REFERER'))
     
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.filter(verified=False)
+        return queryset.filter(verified=False, user__is_active = True)
 
 # class OTPAdmin(admin.ModelAdmin):
 #     list_display = ('phone_number', 'otp', 'created_at')
