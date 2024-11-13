@@ -1,4 +1,5 @@
 # from django.contrib import admin
+# from farm_flow.admin import custom_admin_site
 # from .models import Test
 
 # class TestAdmin(admin.ModelAdmin):
@@ -6,4 +7,4 @@
 #     search_fields = ('one',)
 
 # # Register the model with the custom admin class
-# admin.site.register(Test, TestAdmin)
+# custom_admin_site.register(Test, TestAdmin)

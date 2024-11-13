@@ -1,4 +1,5 @@
 # from django.contrib import admin
+# from farm_flow.admin import custom_admin_site
 # from .models import Orders, OrderProduct, Payment, Delivery
 
 # class OrdersAdmin(admin.ModelAdmin):
@@ -22,7 +23,7 @@
 #     list_filter = ('delivery_type', 'delivery_status', 'delivery_date')
 
 # # Register the models with the custom admin classes
-# admin.site.register(Orders, OrdersAdmin)
-# admin.site.register(OrderProduct, OrderProductAdmin)
-# admin.site.register(Payment, PaymentAdmin)
-# admin.site.register(Delivery, DeliveryAdmin)
+# custom_admin_site.register(Orders, OrdersAdmin)
+# custom_admin_site.register(OrderProduct, OrderProductAdmin)
+# custom_admin_site.register(Payment, PaymentAdmin)
+# custom_admin_site.register(Delivery, DeliveryAdmin)

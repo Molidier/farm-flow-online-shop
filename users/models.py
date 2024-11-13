@@ -63,7 +63,20 @@ class Farmer(models.Model):
     Fname = models.CharField(max_length=60)
     verified = models.BooleanField(default=False)
 
+# Proxy model for Verified Farmers
+class VerifiedFarmer(Farmer):
+    class Meta:
+        proxy = True
+        verbose_name = "Verified Farmer"
+        verbose_name_plural = "Verified Farmers"
 
+# Proxy model for Unverified Farmers
+class PendingFarmer(Farmer):
+    class Meta:
+        proxy = True
+        verbose_name = "Pending Farmer"
+        verbose_name_plural = "Pending Farmers"
+        
 # Signal to set `is_active` to False for farmers
 @receiver(post_save, sender=Farmer)
 def set_farmer_inactive(sender, instance, created, **kwargs):

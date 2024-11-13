@@ -1,4 +1,5 @@
 # from django.contrib import admin
+# from farm_flow.admin import custom_admin_site
 # from .models import Farm, Product, Inventory, Cart, CartItem
 
 # class FarmAdmin(admin.ModelAdmin):
@@ -26,8 +27,8 @@
 #     search_fields = ('product__name', 'cart__buyer__user__first_name', 'cart__buyer__user__last_name')
 
 # # Register the models with the custom admin classes
-# admin.site.register(Farm, FarmAdmin)
-# admin.site.register(Product, ProductAdmin)
-# admin.site.register(Inventory, InventoryAdmin)
-# admin.site.register(Cart, CartAdmin)
-# admin.site.register(CartItem, CartItemAdmin)
+# custom_admin_site.register(Farm, FarmAdmin)
+# custom_admin_site.register(Product, ProductAdmin)
+# custom_admin_site.register(Inventory, InventoryAdmin)
+# custom_admin_site.register(Cart, CartAdmin)
+# custom_admin_site.register(CartItem, CartItemAdmin)

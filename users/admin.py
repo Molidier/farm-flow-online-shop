@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Buyer, Farmer, OTP
+from .models import User, Buyer, Farmer, OTP, VerifiedFarmer, PendingFarmer
 from rest_framework.authtoken.models import TokenProxy
 from django.contrib.auth.models import Group
 
@@ -34,10 +34,23 @@ class BuyerAdmin(admin.ModelAdmin):
     list_display = ('user', 'deliveryAdress')
     search_fields = ('user__phone_number', 'user__email', 'deliveryAdress')
 
-class FarmerAdmin(admin.ModelAdmin):
+class VerifiedFarmerAdmin(admin.ModelAdmin):
     list_display = ('user', 'Fname', 'verified')
     search_fields = ('user__phone_number', 'user__email', 'Fname')
     list_filter = ('verified',)
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.filter(verified=True)
+
+class PendingFarmerAdmin(admin.ModelAdmin):
+    list_display = ('user', 'Fname', 'verified')
+    search_fields = ('user__phone_number', 'user__email', 'Fname')
+    list_filter = ('verified',)
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.filter(verified=False)
 
 # class OTPAdmin(admin.ModelAdmin):
 #     list_display = ('phone_number', 'otp', 'created_at')
@@ -45,7 +58,4 @@ class FarmerAdmin(admin.ModelAdmin):
 #     list_filter = ('created_at',)
 
 # Register the models with the custom admin classes
-admin.site.register(User, UserAdmin)
-admin.site.register(Buyer, BuyerAdmin)
-admin.site.register(Farmer, FarmerAdmin)
 # admin.site.register(OTP, OTPAdmin)
