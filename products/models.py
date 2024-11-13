@@ -13,7 +13,7 @@ class Category(models.Model):
 
 # Farm model to store details about a farm owned by a farmer
 class Farm(models.Model):
-    farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
+    farmer = models.OneToOneField(Farmer, on_delete=models.CASCADE)
     farm_name = models.CharField(max_length=100)
     farm_passport = models.CharField(max_length=50, unique=True)
     farm_location = models.CharField(max_length=255, null=True, blank=True)

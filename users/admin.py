@@ -35,7 +35,7 @@ class BuyerAdmin(admin.ModelAdmin):
     search_fields = ('user__phone_number', 'user__email', 'deliveryAdress')
 
 class VerifiedFarmerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'Fname', 'verified')
+    list_display = ('user', 'Fname')
     search_fields = ('user__phone_number', 'user__email', 'Fname')
     list_filter = ('verified',)
 
@@ -44,13 +44,23 @@ class VerifiedFarmerAdmin(admin.ModelAdmin):
         return queryset.filter(verified=True)
 
 class PendingFarmerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'Fname', 'verified')
+    list_display = ('user', 'Fname', 'get_farm_location', 'get_farm_passport')
     search_fields = ('user__phone_number', 'user__email', 'Fname')
     list_filter = ('verified',)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.filter(verified=False)
+    
+    # Custom method to display the farm location
+    def get_farm_location(self, obj):
+        return obj.farm.farm_location if hasattr(obj, 'farm') else 'No location'
+    get_farm_location.short_description = 'Farm Location'
+
+    # Custom method to display the farm size
+    def get_farm_passport(self, obj):
+        return obj.farm.farm_passport if hasattr(obj, 'farm') else 'No size'
+    get_farm_passport.short_description = 'Farm Passport'
 
 # class OTPAdmin(admin.ModelAdmin):
 #     list_display = ('phone_number', 'otp', 'created_at')
