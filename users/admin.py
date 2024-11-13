@@ -35,17 +35,17 @@ class BuyerAdmin(admin.ModelAdmin):
     search_fields = ('user__phone_number', 'user__email', 'deliveryAdress')
 
 class FarmerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'Fname', 'is_verified')
+    list_display = ('user', 'Fname', 'verified')
     search_fields = ('user__phone_number', 'user__email', 'Fname')
-    list_filter = ('is_verified',)
+    list_filter = ('verified',)
 
-class OTPAdmin(admin.ModelAdmin):
-    list_display = ('phone_number', 'otp', 'created_at')
-    search_fields = ('phone_number',)
-    list_filter = ('created_at',)
+# class OTPAdmin(admin.ModelAdmin):
+#     list_display = ('phone_number', 'otp', 'created_at')
+#     search_fields = ('phone_number',)
+#     list_filter = ('created_at',)
 
 # Register the models with the custom admin classes
 admin.site.register(User, UserAdmin)
 admin.site.register(Buyer, BuyerAdmin)
 admin.site.register(Farmer, FarmerAdmin)
-admin.site.register(OTP, OTPAdmin)
+# admin.site.register(OTP, OTPAdmin)

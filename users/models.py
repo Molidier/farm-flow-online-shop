@@ -61,7 +61,7 @@ class Buyer(models.Model):
 class Farmer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     Fname = models.CharField(max_length=60)
-    #is_verified = models.BooleanField(default=False)
+    verified = models.BooleanField(default=False)
 
 
 # Signal to set `is_active` to False for farmers
