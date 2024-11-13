@@ -1,5 +1,4 @@
 from django.contrib.admin import AdminSite
-from django.contrib import admin
 from users.models import Buyer, VerifiedFarmer, PendingFarmer, User
 from users.admin import BuyerAdmin, VerifiedFarmerAdmin, PendingFarmerAdmin, UserAdmin
 

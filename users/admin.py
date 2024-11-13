@@ -1,6 +1,10 @@
 from django.contrib import admin
+from django.urls import path
+from django.utils.html import format_html
+from django.shortcuts import redirect
+from .models import PendingFarmer, VerifiedFarmer
+from django.contrib import messages
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Buyer, Farmer, OTP, VerifiedFarmer, PendingFarmer
 from rest_framework.authtoken.models import TokenProxy
 from django.contrib.auth.models import Group
 
@@ -33,9 +37,9 @@ class UserAdmin(BaseUserAdmin):
 class BuyerAdmin(admin.ModelAdmin):
     list_display = ('user', 'deliveryAdress')
     search_fields = ('user__phone_number', 'user__email', 'deliveryAdress')
-    
+
 class BaseFarmerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'Fname', 'get_farm_location', 'get_farm_passport')
+    list_display = ('user', 'Fname', 'get_farm_location', 'get_farm_passport', 'verified')
     search_fields = ('user__phone_number', 'user__email', 'Fname')
 
     # Common methods to display related Farm information
@@ -53,6 +57,50 @@ class VerifiedFarmerAdmin(BaseFarmerAdmin):
         return queryset.filter(verified=True)
 
 class PendingFarmerAdmin(BaseFarmerAdmin):
+    list_display = ('user', 'Fname', 'get_farm_location', 'get_farm_passport', 'approve_button', 'reject_button')
+     # Approve button
+    def approve_button(self, obj):
+        return format_html(
+            '<a class="button" href="{}">Approve</a>',
+            f"approve/{obj.id}"
+        )
+    approve_button.short_description = 'Approve'
+    approve_button.allow_tags = True
+
+    # Reject button
+    def reject_button(self, obj):
+        return format_html(
+            '<a class="button" href="{}">Reject</a>',
+            f"reject/{obj.id}"
+        )
+    reject_button.short_description = 'Reject'
+    reject_button.allow_tags = True
+
+    # Define custom URLs for approve and reject actions
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('approve/<int:farmer_id>/', self.approve_farmer, name='approve_farmer'),
+            path('reject/<int:farmer_id>/', self.reject_farmer, name='reject_farmer'),
+        ]
+        return custom_urls + urls
+
+    # Approve action
+    def approve_farmer(self, request, farmer_id):
+        farmer = PendingFarmer.objects.get(id=farmer_id)
+        farmer.verified = True
+        farmer.save()
+        messages.success(request, f"Farmer {farmer.Fname} has been approved.")
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    # Reject action
+    def reject_farmer(self, request, farmer_id):
+        farmer = PendingFarmer.objects.get(id=farmer_id)
+        farmer.verified = False
+        farmer.save()
+        messages.success(request, f"Farmer {farmer.Fname} has been rejected.")
+        return redirect(request.META.get('HTTP_REFERER'))
+    
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.filter(verified=False)
