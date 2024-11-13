@@ -1,8 +1,9 @@
 from django.contrib import admin
+from django import forms
 from django.urls import path
 from django.utils.html import format_html
 from django.shortcuts import redirect
-from .models import Farmer, PendingFarmer, ApprovedFarmer
+from .models import Farmer, PendingFarmer, ApprovedFarmer, User
 from django.contrib import messages
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from rest_framework.authtoken.models import TokenProxy
@@ -38,9 +39,39 @@ class BuyerAdmin(admin.ModelAdmin):
     list_display = ('user', 'deliveryAdress')
     search_fields = ('user__phone_number', 'user__email', 'deliveryAdress')
 
+class FarmerAdminForm(forms.ModelForm):
+    # Add `is_active` as a field in the FarmerAdmin form
+    is_active = forms.BooleanField(label="Active", required=False)
+
+    class Meta:
+        model = Farmer
+        fields = ['user', 'Fname', 'verified', 'is_active']  # Include `is_active`
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Initialize `is_active` from the related `User` model
+        if self.instance.user:
+            self.fields['is_active'].initial = self.instance.user.is_active
+
+    def save(self, commit=True):
+        # Save the `is_active` field to the related `User` model
+        instance = super().save(commit=False)
+        if 'is_active' in self.cleaned_data:
+            # Set is_active on the related User model
+            instance.user.is_active = self.cleaned_data['is_active']
+            instance.user.save()  # Explicitly save the User instance
+        if commit:
+            instance.save()
+        return instance
+
 class BaseFarmerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'Fname', 'get_farm_location', 'get_farm_passport', 'get_is_active')
+    form = FarmerAdminForm
+    list_display = ('user', 'get_name', 'Fname', 'get_farm_location', 'get_farm_passport', 'get_is_active')
     search_fields = ('user__phone_number', 'user__email', 'Fname')
+
+    def get_name(self, obj):
+        return obj.user.first_name + ' ' + obj.user.last_name
+    get_name.short_description = 'Full Name'
 
     # Common methods to display related Farm information
     def get_farm_location(self, obj):
