@@ -37,7 +37,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 class FFUserAdmin(admin.ModelAdmin):
-    list_display = ('user', 'get_name', 'get_email', 'get_is_active')
+    list_display = ('user', 'get_name', 'get_email')
     # Get fields from User
     def get_name(self, obj):
         return obj.user.first_name + ' ' + obj.user.last_name
@@ -45,10 +45,6 @@ class FFUserAdmin(admin.ModelAdmin):
     def get_email(self, obj):
         return obj.user.email
     get_email.short_description = 'Email'
-    def get_is_active(self, obj):
-        return obj.user.is_active
-    get_is_active.short_description = 'Active'
-    get_is_active.boolean = True
 
 
 class BuyerAdmin(FFUserAdmin):
@@ -58,10 +54,19 @@ class BuyerAdmin(FFUserAdmin):
 
 class FarmerAdminForm(forms.ModelForm):
     # Add `is_active` as a field in the FarmerAdmin form
-    is_active = forms.BooleanField(label="Active", required=False)
+    status = forms.ChoiceField(
+        label="Status",
+        choices=[
+            ("pending", "Pending"),
+            ("approved", "Approved"),
+            ("rejected", "Rejected"),
+        ],
+        required=
+        False,
+    )
     class Meta:
         model = Farmer
-        fields = ['user', 'Fname', 'verified', 'is_active']
+        fields = ['user', 'Fname']
     # Initialize `is_active` from the related `User` model
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -81,8 +86,11 @@ class FarmerAdminForm(forms.ModelForm):
 
 class BaseFarmerAdmin(FFUserAdmin):
     form = FarmerAdminForm
-    list_display = FFUserAdmin.list_display + ('Fname', 'get_farm_location', 'get_farm_passport')
+    list_display = FFUserAdmin.list_display + ('get_is_active','Fname', 'get_farm_location', 'get_farm_passport')
     search_fields = ('user__phone_number', 'user__email', 'Fname')
+    def get_is_active(self, obj):
+        return obj.user.is_active
+    get_is_active.short_description = 'Status'
     # Get fields from Farm
     def get_farm_location(self, obj):
         return obj.farm.farm_location if hasattr(obj, 'farm') else 'No location'
@@ -95,16 +103,16 @@ class BaseFarmerAdmin(FFUserAdmin):
         return False
 
 class ApprovedFarmerAdmin(BaseFarmerAdmin):
-    # Display only Verified Farmers
+    # Display only Approved Farmers
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.filter(verified=True)
+        return queryset.filter(user__is_active='approved')
     
 class RejectedFarmerAdmin(BaseFarmerAdmin):
-    # Display only Inactive, Unverified Farmers
+    # Display only Rejected Farmers
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.filter(verified=False, user__is_active=False)
+        return queryset.filter(user__is_active='rejected')
 
 class PendingFarmerAdmin(BaseFarmerAdmin):
     list_display = BaseFarmerAdmin.list_display +  ('approve_button', 'reject_button')
@@ -135,22 +143,20 @@ class PendingFarmerAdmin(BaseFarmerAdmin):
     # Approve action
     def approve_farmer(self, request, farmer_id):
         farmer = Farmer.objects.get(id=farmer_id)
-        farmer.verified = True
-        farmer.user.is_active = True
+        farmer.user.is_active = 'approved'
         farmer.save()
         messages.success(request, f"Farmer {farmer.Fname} has been approved.")
         return redirect(request.META.get('HTTP_REFERER'))
     # Reject action
     def reject_farmer(self, request, farmer_id):
         farmer = Farmer.objects.get(id=farmer_id)
-        farmer.verified = False
-        farmer.user.is_active = False
+        farmer.user.is_active = 'rejected'
         farmer.save()
         farmer.user.save()
         messages.success(request, f"Farmer {farmer.Fname} has been rejected.")
         return redirect(request.META.get('HTTP_REFERER'))
-    # Display only Active, Unverified Farmers
+    # Display only Pending Farmers
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.filter(verified=False, user__is_active = True)
+        return queryset.filter(user__is_active = 'pending')
 

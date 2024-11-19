@@ -65,7 +65,17 @@ class Migration(migrations.Migration):
                 ),
                 ("phone_number", models.CharField(max_length=15, unique=True)),
                 ("is_staff", models.BooleanField(default=False)),
-                ("is_active", models.BooleanField(default=True)),
+                (
+                    "is_active", 
+                    models.CharField(
+                        choices=[
+                            ("admin", "Admin"),
+                            ("farmer", "Farmer"),
+                            ("buyer", "Buyer"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
                 ("is_superuser", models.BooleanField(default=False)),
                 (
                     "groups",

@@ -32,6 +32,12 @@ class UserManager(BaseUserManager):
         return self.create_user(email, phone_number, first_name, last_name, password=password, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("approved", "Approved"),
+        ("rejected", "Rejected"),
+    ]
+
     ROLE_CHOICES = [
         ("admin", "Admin"),
         ("farmer", "Farmer"),
@@ -44,7 +50,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     phone_number = models.CharField(max_length=15, unique=True)
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    is_active = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
     is_superuser = models.BooleanField(default=False)
 
     objects = UserManager()
@@ -61,7 +67,7 @@ class Buyer(models.Model):
 class Farmer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     Fname = models.CharField(max_length=60)
-    verified = models.BooleanField(default=False)
+    #verified = models.BooleanField(default=False)
 
 # Proxy model for Verified Farmers
 class ApprovedFarmer(Farmer):
@@ -84,11 +90,11 @@ class PendingFarmer(Farmer):
         verbose_name = "Pending Farmer"
         verbose_name_plural = "Pending Farmers"
         
-# Signal to set `is_active` to False for farmers
+# Signal to set `is_active` to 'Rejected' for farmers
 @receiver(post_save, sender=Farmer)
 def set_farmer_inactive(sender, instance, created, **kwargs):
     if created:
-        instance.user.is_active = False
+        instance.user.is_active = 'rejected'
         instance.user.save()
 
 class OTP(models.Model):
