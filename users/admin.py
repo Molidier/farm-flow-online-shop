@@ -17,7 +17,7 @@ admin.site.unregister(TokenProxy)
 
 class UserAdmin(BaseUserAdmin):
     # Define the fields to display in the list view
-    list_display = ('email', 'phone_number', 'first_name', 'last_name', 'role', 'is_staff', 'is_active')
+    list_display = ('email', 'phone_number', 'first_name', 'last_name', 'role', 'is_staff')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'role')
     search_fields = ('email', 'phone_number', 'first_name', 'last_name')
     ordering = ('email',)
@@ -31,7 +31,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'phone_number', 'first_name', 'last_name', 'role', 'password1', 'password2', 'is_staff', 'is_active'),
+            'fields': ('email', 'phone_number', 'first_name', 'last_name', 'role', 'password1', 'password2', 'is_staff',),
         }),
     )
 
@@ -54,15 +54,14 @@ class BuyerAdmin(FFUserAdmin):
 
 class FarmerAdminForm(forms.ModelForm):
     # Add `is_active` as a field in the FarmerAdmin form
-    status = forms.ChoiceField(
-        label="Status",
+    is_active = forms.ChoiceField(
+        label="is_active",
         choices=[
             ("pending", "Pending"),
             ("approved", "Approved"),
             ("rejected", "Rejected"),
         ],
-        required=
-        False,
+        required=False,
     )
     class Meta:
         model = Farmer
@@ -78,7 +77,7 @@ class FarmerAdminForm(forms.ModelForm):
         if 'is_active' in self.cleaned_data:
             # Set is_active on the related User model
             instance.user.is_active = self.cleaned_data['is_active']
-            instance.user.save()  # Explicitly save the User instance
+            instance.user.save()
         if commit:
             instance.save()
         return instance
@@ -90,7 +89,7 @@ class BaseFarmerAdmin(FFUserAdmin):
     search_fields = ('user__phone_number', 'user__email', 'Fname')
     def get_is_active(self, obj):
         return obj.user.is_active
-    get_is_active.short_description = 'Status'
+    get_is_active.short_description = 'Is_active'
     # Get fields from Farm
     def get_farm_location(self, obj):
         return obj.farm.farm_location if hasattr(obj, 'farm') else 'No location'
@@ -145,6 +144,7 @@ class PendingFarmerAdmin(BaseFarmerAdmin):
         farmer = Farmer.objects.get(id=farmer_id)
         farmer.user.is_active = 'approved'
         farmer.save()
+        farmer.user.save()
         messages.success(request, f"Farmer {farmer.Fname} has been approved.")
         return redirect(request.META.get('HTTP_REFERER'))
     # Reject action
