@@ -149,7 +149,7 @@ class PendingFarmerAdmin(BaseFarmerAdmin):
         farmer.user.is_active = 'approved'
         farmer.save()
         farmer.user.save()
-        messages.success(request, f"Farmer {farmer.Fname} has been approved.")
+        messages.success(request, f"Farmer {farmer.user.first_name + ' ' + farmer.user.last_name} has been approved.")
         return redirect(request.META.get('HTTP_REFERER'))
     # Reject action
     def reject_farmer(self, request, farmer_id):
@@ -164,7 +164,7 @@ class PendingFarmerAdmin(BaseFarmerAdmin):
                 farmer.user.save()
                 farmer.save()
                 # EMAIL HERE!!
-                messages.success(request, f"Farmer {farmer.Fname} has been rejected for reason: {reason}.")
+                messages.success(request, f"Farmer {farmer.user.first_name + ' ' + farmer.user.last_name} has been rejected for reason: {reason}.")
             else:
                 messages.error(request, "Rejection reason cannot be empty.")
 
