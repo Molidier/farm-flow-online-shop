@@ -59,7 +59,7 @@ Admin may specify a reason in case of farmer reject.
 After submitting the "Reject" form, admin is redirected back to the "Pending Farmer" page.
 
 List of approved farmers.
-![](/assets/approved_farmer_list.png)
+![](/https://github.com/Molidier/swe-a-star-team.git/main/assets/approved_farmer_list.png)
 
 List of rejected farmers.
 ![](/assets/rejected_farmer_list.png)
