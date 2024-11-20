@@ -8,7 +8,8 @@ from django.contrib import messages
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from rest_framework.authtoken.models import TokenProxy
 from django.contrib.auth.models import Group
-
+from django.middleware.csrf import get_token
+from django.http import HttpResponse
 
 #Hides Auth Token and Groups Sections
 admin.site.unregister(Group)
@@ -101,17 +102,20 @@ class BaseFarmerAdmin(FFUserAdmin):
     def has_add_permission(self, request):
         return False
 
+
 class ApprovedFarmerAdmin(BaseFarmerAdmin):
     # Display only Approved Farmers
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.filter(user__is_active='approved')
     
+
 class RejectedFarmerAdmin(BaseFarmerAdmin):
     # Display only Rejected Farmers
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.filter(user__is_active='rejected')
+
 
 class PendingFarmerAdmin(BaseFarmerAdmin):
     list_display = BaseFarmerAdmin.list_display +  ('approve_button', 'reject_button')
@@ -150,11 +154,39 @@ class PendingFarmerAdmin(BaseFarmerAdmin):
     # Reject action
     def reject_farmer(self, request, farmer_id):
         farmer = Farmer.objects.get(id=farmer_id)
-        farmer.user.is_active = 'rejected'
-        farmer.save()
-        farmer.user.save()
-        messages.success(request, f"Farmer {farmer.Fname} has been rejected.")
-        return redirect(request.META.get('HTTP_REFERER'))
+
+        if request.method == 'POST':
+            reason = request.POST.get('reason', '').strip()
+            previous_url = request.POST.get('previous_url', '/admin/')  # Default fallback
+
+            if reason:
+                farmer.user.is_active = 'rejected'
+                farmer.user.save()
+                farmer.save()
+                # EMAIL HERE!!
+                messages.success(request, f"Farmer {farmer.Fname} has been rejected for reason: {reason}.")
+            else:
+                messages.error(request, "Rejection reason cannot be empty.")
+
+            return redirect(previous_url)
+
+        # Include the previous URL in the form
+        csrf_token = get_token(request)
+        previous_url = request.META.get('HTTP_REFERER', '/admin/')
+        html = format_html(
+            """
+            <form method="post" style="margin: 10px;">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{}" />
+                <input type="hidden" name="previous_url" value="{}" />
+                <textarea name="reason" rows="4" cols="40" placeholder="Enter rejection reason"></textarea>
+                <br><button type="submit" class="button">Submit</button>
+            </form>
+            """,
+            csrf_token,
+            previous_url
+        )
+        return HttpResponse(html)
+
     # Display only Pending Farmers
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
