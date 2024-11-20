@@ -32,28 +32,37 @@ FarmFlow mobile application offers a role-based authentication, where users can 
 ## Admin Dashboard
 
 Admin dashboard after login.
+![](/assets/admin_dashboard.jpeg)
 
 Admin can view list of all users and their account details.
+![](/assets/admin_users_list.jpeg)
 
 Admins can edited any user entries.
+![](/assets/admin_editjpeg)
 
 ## List of all Buyers
 
+![](/assets/admin_buyers_list.jpeg)
 Admin can view all buyers in a list
 
 ## List of Farmers
 
 Admins may approve or reject newly registered farmers with a single click.
+![](/assets/farmers-reject.jpeg)
 
 List of pending farmers
+![](/assets/pending_farmers_list.png)
 
 Admin may specify a reason in case of farmer reject.
+![](/assets/reject_resoning.png)
 
-After rejecting the "Reject" form, admin is redirected back to the "Pending Farmer" page.
+After submitting the "Reject" form, admin is redirected back to the "Pending Farmer" page.
 
 List of approved farmers.
+![](/assets/approved_farmer_list.png)
 
 List of rejected farmers.
+![](/assets/rejected_farmer_list.png)
 
 ## Farmer Interface
 
@@ -62,12 +71,18 @@ List of rejected farmers.
 * List Track sales and performance metrics.
 
 Farmers can register and specify farm details.
+![](/assets/Farmer-Registration2.png)
 
-After registration as a farmer, you will see the "Pending Approval" page. As soon as admin will review and approve your registration, you will be redirected to the "Farmer's Home Page".
+After registration as a farmer, you will see the "Pending Approval" page.
+![](/assets/Pending-Approval-Page.png)
+
+As soon as admin will review and approve your registration, you will be redirected to the "Farmer's Home Page".
+![](/assets/approved_farmer_list.png)
 
 In the Farmer's Home page, you can add the products and corresponding details. You can provide name, specify the category and upload images of your product.
 
 In "Orders Page" you will see the history of old and new incoming orders. In the upper right crner of the new order's window, you may see the bargain offer incoming from a buyer. Farmers may accept or reject bargain offers.
+![](/assets/Orders-Page.png)
 
 ## Buyer Interface
 
@@ -76,8 +91,10 @@ In "Orders Page" you will see the history of old and new incoming orders. In the
 * List View detailed product descriptions, images, and seller information.
 
 Buyers can view all the products currently available grouped by the categories. After choosing a category, you can see the products with pricing and farm name details.
+![](/assets/Buyer-Home-Page.png)
 
 Buyers can browse for a product by its category, price, or farm brand.
+![](/assets/Search-Barpng)
 
 The search bar allows product filtering and sorting.
 
