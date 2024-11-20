@@ -10,6 +10,9 @@ from rest_framework.authtoken.models import TokenProxy
 from django.contrib.auth.models import Group
 from django.middleware.csrf import get_token
 from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.core.mail import BadHeaderError
+from smtplib import SMTPException
 
 #Hides Auth Token and Groups Sections
 admin.site.unregister(Group)
@@ -164,6 +167,18 @@ class PendingFarmerAdmin(BaseFarmerAdmin):
                 farmer.user.save()
                 farmer.save()
                 # EMAIL HERE!!
+                subject = 'Farmer Registration: Rejected'
+                message = f"Hi {farmer.user.first_name},\n\nYour registration was rejected by admin: {reason}."
+                try:
+                    send_mail(subject, message, 'toksanbayamira4@gmail.com', [farmer.user.email],fail_silently=False)
+                except BadHeaderError:
+                    print("Invalid header found.")
+                except SMTPException as e:
+                    print(f"SMTP error occurred: {e}")
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+        
+                #send_mail(subject, message, 'toksanbayamira4@gmail.com', [farmer.user.email], fail_silently=False)
                 messages.success(request, f"Farmer {farmer.user.first_name + ' ' + farmer.user.last_name} has been rejected for reason: {reason}.")
             else:
                 messages.error(request, "Rejection reason cannot be empty.")

@@ -98,9 +98,8 @@ def set_farmer_inactive(sender, instance, created, **kwargs):
         instance.user.save()
 
 class OTP(models.Model):
-    phone_number = models.CharField(max_length=15)
+    email = models.EmailField()
     otp = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
-
     def is_valid(self):
         return (timezone.now() - self.created_at) < timedelta(minutes=5)

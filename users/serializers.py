@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Farmer, Buyer
+from .models import User, Farmer, Buyer, OTP
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -52,3 +52,9 @@ class BuyerSerializer(serializers.ModelSerializer):
         instance.save()
         
         return instance
+
+class VerifyOTPSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OTP
+        fields = ['id', 'email', 'otp', 'created_at']
+        read_only_fields = ['created_at']
