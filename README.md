@@ -32,26 +32,26 @@ FarmFlow mobile application offers a role-based authentication, where users can 
 ## Admin Dashboard
 
 Admin dashboard after login.
-![](/assets/admin_dashboard.jpeg)
+![](/../main/assets/admin_dashboard.jpeg)
 
 Admin can view list of all users and their account details.
-![](/assets/admin_users_list.jpeg)
+![](/../main/assets/admin_users_list.jpeg)
 
 Admins can edited any user entries.
-![](/assets/admin_editjpeg)
+![](/../main/assets/admin_editjpeg)
 
 ## List of all Buyers
 
-![](/assets/admin_buyers_list.jpeg)
+![](/https://github.com/Molidier/swe-a-star-team.git/main/assets/admin_buyers_list.jpeg)
 Admin can view all buyers in a list
 
 ## List of Farmers
 
 Admins may approve or reject newly registered farmers with a single click.
-![](/assets/farmers-reject.jpeg)
+![](/../main/assets/farmers-reject.jpeg)
 
 List of pending farmers
-![](/assets/pending_farmers_list.png)
+![](/../main/assets/pending_farmers_list.png)
 
 Admin may specify a reason in case of farmer reject.
 ![](/assets/reject_resoning.png)
