@@ -51,7 +51,9 @@ Admins may approve or reject newly registered farmers with a single click.
 ![](/../main/assets/farmers-reject.jpeg)
 
 List of pending farmers
-![](/../main/assets/pending_farmers_list.png)
+<p align="center">
+<img src="./assets/pending_farmers_list.png" alt="Popup" width="300">
+</p>
 
 Admin may specify a reason in case of farmer reject.
 ![](/assets/reject_resoning.png)
