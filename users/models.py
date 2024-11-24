@@ -94,7 +94,7 @@ class PendingFarmer(Farmer):
 @receiver(post_save, sender=Farmer)
 def set_farmer_inactive(sender, instance, created, **kwargs):
     if created:
-        instance.user.is_active = 'rejected'
+        instance.user.is_active = 'pending'
         instance.user.save()
 
 class OTP(models.Model):

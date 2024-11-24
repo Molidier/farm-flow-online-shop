@@ -79,7 +79,8 @@ class VerifyOTPView(APIView):
                 user = User.objects.get(email=email)
                 user.is_active = "approved"
                 user.save()
-                return Response({"message": "Email verified successfully. You can now log in."}, status=status.HTTP_200_OK)
+                user_serializer = UserSerializer(user)
+                return Response(user_serializer.data, status=status.HTTP_200_OK)
         return Response({"error": "Invalid", "data": serializer.data}, status=status.HTTP_400_BAD_REQUEST)
     
 
