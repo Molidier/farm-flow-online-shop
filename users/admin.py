@@ -152,6 +152,16 @@ class PendingFarmerAdmin(BaseFarmerAdmin):
         farmer.user.is_active = 'approved'
         farmer.save()
         farmer.user.save()
+        subject = 'Farmer Registration: Approved'
+        message = f"Hi {farmer.user.first_name},\n\nYour registration was approved by admin!"
+        try:
+            send_mail(subject, message, 'toksanbayamira4@gmail.com', [farmer.user.email],fail_silently=False)
+        except BadHeaderError:
+            print("Invalid header found.")
+        except SMTPException as e:
+            print(f"SMTP error occurred: {e}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
         messages.success(request, f"Farmer {farmer.user.first_name + ' ' + farmer.user.last_name} has been approved.")
         return redirect(request.META.get('HTTP_REFERER'))
     # Reject action
@@ -177,8 +187,6 @@ class PendingFarmerAdmin(BaseFarmerAdmin):
                     print(f"SMTP error occurred: {e}")
                 except Exception as e:
                     print(f"An error occurred: {e}")
-        
-                #send_mail(subject, message, 'toksanbayamira4@gmail.com', [farmer.user.email], fail_silently=False)
                 messages.success(request, f"Farmer {farmer.user.first_name + ' ' + farmer.user.last_name} has been rejected for reason: {reason}.")
             else:
                 messages.error(request, "Rejection reason cannot be empty.")
