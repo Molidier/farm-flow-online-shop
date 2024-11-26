@@ -1,1 +1,0 @@
-# swe-a-star-team
