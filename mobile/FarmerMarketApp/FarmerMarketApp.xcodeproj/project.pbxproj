@@ -1,0 +1,517 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		351198662CD5045C00CC6B14 /* WelcomePageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351198652CD5045C00CC6B14 /* WelcomePageViewController.swift */; };
+		351198682CD5112A00CC6B14 /* FarmerRegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351198672CD5112A00CC6B14 /* FarmerRegistrationViewController.swift */; };
+		3511986A2CD5128100CC6B14 /* BuyerRegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351198692CD5128100CC6B14 /* BuyerRegistrationViewController.swift */; };
+		3511986C2CD512C000CC6B14 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3511986B2CD512C000CC6B14 /* SignInViewController.swift */; };
+		3511986E2CD5147800CC6B14 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3511986D2CD5147800CC6B14 /* NetworkManager.swift */; };
+		351198702CD523B200CC6B14 /* MainPageFarmerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3511986F2CD523B200CC6B14 /* MainPageFarmerViewController.swift */; };
+		351865062CEE7A28001C58C7 /* AddProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351865052CEE7A28001C58C7 /* AddProductViewController.swift */; };
+		351865082CEED4F1001C58C7 /* OrdersFarmerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351865072CEED4F1001C58C7 /* OrdersFarmerViewController.swift */; };
+		3518650A2CEED756001C58C7 /* ChatFarmerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351865092CEED756001C58C7 /* ChatFarmerViewController.swift */; };
+		3518650C2CEED79A001C58C7 /* AccountFarmerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3518650B2CEED79A001C58C7 /* AccountFarmerViewController.swift */; };
+		3518650E2CEED997001C58C7 /* OrdersBuyerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3518650D2CEED997001C58C7 /* OrdersBuyerViewController.swift */; };
+		351865102CEED9B8001C58C7 /* CartBuyerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3518650F2CEED9B8001C58C7 /* CartBuyerViewController.swift */; };
+		351865122CEED9C8001C58C7 /* AccountBuyerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 351865112CEED9C8001C58C7 /* AccountBuyerViewController.swift */; };
+		351865152CEEE0B0001C58C7 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 351865142CEEE0B0001C58C7 /* SnapKit */; };
+		352384BA2CE25FC100DC071A /* PendingApproavalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 352384B92CE25FC100DC071A /* PendingApproavalViewModel.swift */; };
+		352384BC2CE2738900DC071A /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 352384BB2CE2738900DC071A /* Model.swift */; };
+		352384BE2CE27B5D00DC071A /* MainPageBuyerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 352384BD2CE27B5D00DC071A /* MainPageBuyerViewController.swift */; };
+		35512E552CF4C65B0014D8EC /* CategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35512E542CF4C65B0014D8EC /* CategoryCell.swift */; };
+		35512E572CF4C6B80014D8EC /* CategoryDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35512E562CF4C6B80014D8EC /* CategoryDetailViewController.swift */; };
+		35512E592CF4CEDE0014D8EC /* ProductCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35512E582CF4CEDE0014D8EC /* ProductCell.swift */; };
+		35512E5B2CF4E17F0014D8EC /* InventoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35512E5A2CF4E17F0014D8EC /* InventoryCell.swift */; };
+		356E93C72CF0958A00BCDB65 /* BuyerOTPViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 356E93C62CF0958A00BCDB65 /* BuyerOTPViewController.swift */; };
+		356E93C92CF0C98300BCDB65 /* FarmInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 356E93C82CF0C98300BCDB65 /* FarmInfoViewController.swift */; };
+		356E93CB2CF259A200BCDB65 /* FavouriteProductsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 356E93CA2CF259A200BCDB65 /* FavouriteProductsViewController.swift */; };
+		356E93CD2CF25A0C00BCDB65 /* ChatsBuyerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 356E93CC2CF25A0C00BCDB65 /* ChatsBuyerViewController.swift */; };
+		356E93CF2CF3BE3A00BCDB65 /* ProductListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 356E93CE2CF3BE3A00BCDB65 /* ProductListViewController.swift */; };
+		35A0B97C2CD245D200849304 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A0B97B2CD245D200849304 /* AppDelegate.swift */; };
+		35A0B97E2CD245D200849304 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A0B97D2CD245D200849304 /* SceneDelegate.swift */; };
+		35A0B9852CD245D600849304 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 35A0B9842CD245D600849304 /* Assets.xcassets */; };
+		35A0B9882CD245D600849304 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 35A0B9872CD245D600849304 /* Base */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		351198652CD5045C00CC6B14 /* WelcomePageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePageViewController.swift; sourceTree = "<group>"; };
+		351198672CD5112A00CC6B14 /* FarmerRegistrationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FarmerRegistrationViewController.swift; sourceTree = "<group>"; };
+		351198692CD5128100CC6B14 /* BuyerRegistrationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyerRegistrationViewController.swift; sourceTree = "<group>"; };
+		3511986B2CD512C000CC6B14 /* SignInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
+		3511986D2CD5147800CC6B14 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		3511986F2CD523B200CC6B14 /* MainPageFarmerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageFarmerViewController.swift; sourceTree = "<group>"; };
+		351865052CEE7A28001C58C7 /* AddProductViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProductViewController.swift; sourceTree = "<group>"; };
+		351865072CEED4F1001C58C7 /* OrdersFarmerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersFarmerViewController.swift; sourceTree = "<group>"; };
+		351865092CEED756001C58C7 /* ChatFarmerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatFarmerViewController.swift; sourceTree = "<group>"; };
+		3518650B2CEED79A001C58C7 /* AccountFarmerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountFarmerViewController.swift; sourceTree = "<group>"; };
+		3518650D2CEED997001C58C7 /* OrdersBuyerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersBuyerViewController.swift; sourceTree = "<group>"; };
+		3518650F2CEED9B8001C58C7 /* CartBuyerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartBuyerViewController.swift; sourceTree = "<group>"; };
+		351865112CEED9C8001C58C7 /* AccountBuyerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountBuyerViewController.swift; sourceTree = "<group>"; };
+		352384B92CE25FC100DC071A /* PendingApproavalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingApproavalViewModel.swift; sourceTree = "<group>"; };
+		352384BB2CE2738900DC071A /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		352384BD2CE27B5D00DC071A /* MainPageBuyerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageBuyerViewController.swift; sourceTree = "<group>"; };
+		35512E542CF4C65B0014D8EC /* CategoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCell.swift; sourceTree = "<group>"; };
+		35512E562CF4C6B80014D8EC /* CategoryDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryDetailViewController.swift; sourceTree = "<group>"; };
+		35512E582CF4CEDE0014D8EC /* ProductCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCell.swift; sourceTree = "<group>"; };
+		35512E5A2CF4E17F0014D8EC /* InventoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryCell.swift; sourceTree = "<group>"; };
+		356E93C62CF0958A00BCDB65 /* BuyerOTPViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyerOTPViewController.swift; sourceTree = "<group>"; };
+		356E93C82CF0C98300BCDB65 /* FarmInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FarmInfoViewController.swift; sourceTree = "<group>"; };
+		356E93CA2CF259A200BCDB65 /* FavouriteProductsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouriteProductsViewController.swift; sourceTree = "<group>"; };
+		356E93CC2CF25A0C00BCDB65 /* ChatsBuyerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsBuyerViewController.swift; sourceTree = "<group>"; };
+		356E93CE2CF3BE3A00BCDB65 /* ProductListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductListViewController.swift; sourceTree = "<group>"; };
+		35A0B9782CD245D200849304 /* FarmerMarketApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FarmerMarketApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		35A0B97B2CD245D200849304 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		35A0B97D2CD245D200849304 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		35A0B9842CD245D600849304 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		35A0B9872CD245D600849304 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		35A0B9892CD245D600849304 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		35A0B9752CD245D200849304 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				351865152CEEE0B0001C58C7 /* SnapKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		352384B42CE0C61000DC071A /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				3511986D2CD5147800CC6B14 /* NetworkManager.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		352384B62CE0C62D00DC071A /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				351198652CD5045C00CC6B14 /* WelcomePageViewController.swift */,
+				3511986B2CD512C000CC6B14 /* SignInViewController.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		352384B72CE0C6DF00DC071A /* Buyer */ = {
+			isa = PBXGroup;
+			children = (
+				351198692CD5128100CC6B14 /* BuyerRegistrationViewController.swift */,
+				352384BD2CE27B5D00DC071A /* MainPageBuyerViewController.swift */,
+				3518650D2CEED997001C58C7 /* OrdersBuyerViewController.swift */,
+				3518650F2CEED9B8001C58C7 /* CartBuyerViewController.swift */,
+				351865112CEED9C8001C58C7 /* AccountBuyerViewController.swift */,
+				356E93C62CF0958A00BCDB65 /* BuyerOTPViewController.swift */,
+				356E93CA2CF259A200BCDB65 /* FavouriteProductsViewController.swift */,
+				356E93CC2CF25A0C00BCDB65 /* ChatsBuyerViewController.swift */,
+				356E93CE2CF3BE3A00BCDB65 /* ProductListViewController.swift */,
+				35512E542CF4C65B0014D8EC /* CategoryCell.swift */,
+				35512E562CF4C6B80014D8EC /* CategoryDetailViewController.swift */,
+				35512E582CF4CEDE0014D8EC /* ProductCell.swift */,
+			);
+			path = Buyer;
+			sourceTree = "<group>";
+		};
+		352384B82CE0C6E500DC071A /* Farmer */ = {
+			isa = PBXGroup;
+			children = (
+				351198672CD5112A00CC6B14 /* FarmerRegistrationViewController.swift */,
+				3511986F2CD523B200CC6B14 /* MainPageFarmerViewController.swift */,
+				352384B92CE25FC100DC071A /* PendingApproavalViewModel.swift */,
+				351865052CEE7A28001C58C7 /* AddProductViewController.swift */,
+				351865072CEED4F1001C58C7 /* OrdersFarmerViewController.swift */,
+				351865092CEED756001C58C7 /* ChatFarmerViewController.swift */,
+				3518650B2CEED79A001C58C7 /* AccountFarmerViewController.swift */,
+				356E93C82CF0C98300BCDB65 /* FarmInfoViewController.swift */,
+				35512E5A2CF4E17F0014D8EC /* InventoryCell.swift */,
+			);
+			path = Farmer;
+			sourceTree = "<group>";
+		};
+		35A0B96F2CD245D200849304 = {
+			isa = PBXGroup;
+			children = (
+				35A0B97A2CD245D200849304 /* FarmerMarketApp */,
+				35A0B9792CD245D200849304 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		35A0B9792CD245D200849304 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				35A0B9782CD245D200849304 /* FarmerMarketApp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		35A0B97A2CD245D200849304 /* FarmerMarketApp */ = {
+			isa = PBXGroup;
+			children = (
+				352384BB2CE2738900DC071A /* Model.swift */,
+				352384B42CE0C61000DC071A /* Network */,
+				352384B62CE0C62D00DC071A /* Common */,
+				352384B82CE0C6E500DC071A /* Farmer */,
+				352384B72CE0C6DF00DC071A /* Buyer */,
+				35A0B97B2CD245D200849304 /* AppDelegate.swift */,
+				35A0B97D2CD245D200849304 /* SceneDelegate.swift */,
+				35A0B9842CD245D600849304 /* Assets.xcassets */,
+				35A0B9862CD245D600849304 /* LaunchScreen.storyboard */,
+				35A0B9892CD245D600849304 /* Info.plist */,
+			);
+			path = FarmerMarketApp;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		35A0B9772CD245D200849304 /* FarmerMarketApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 35A0B98C2CD245D600849304 /* Build configuration list for PBXNativeTarget "FarmerMarketApp" */;
+			buildPhases = (
+				35A0B9742CD245D200849304 /* Sources */,
+				35A0B9752CD245D200849304 /* Frameworks */,
+				35A0B9762CD245D200849304 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FarmerMarketApp;
+			packageProductDependencies = (
+				351865142CEEE0B0001C58C7 /* SnapKit */,
+			);
+			productName = FarmerMarketApp;
+			productReference = 35A0B9782CD245D200849304 /* FarmerMarketApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		35A0B9702CD245D200849304 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					35A0B9772CD245D200849304 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+				};
+			};
+			buildConfigurationList = 35A0B9732CD245D200849304 /* Build configuration list for PBXProject "FarmerMarketApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 35A0B96F2CD245D200849304;
+			packageReferences = (
+				351865132CEEE0B0001C58C7 /* XCRemoteSwiftPackageReference "SnapKit" */,
+			);
+			productRefGroup = 35A0B9792CD245D200849304 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				35A0B9772CD245D200849304 /* FarmerMarketApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		35A0B9762CD245D200849304 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				35A0B9852CD245D600849304 /* Assets.xcassets in Resources */,
+				35A0B9882CD245D600849304 /* Base in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		35A0B9742CD245D200849304 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				351198682CD5112A00CC6B14 /* FarmerRegistrationViewController.swift in Sources */,
+				356E93CF2CF3BE3A00BCDB65 /* ProductListViewController.swift in Sources */,
+				35A0B97C2CD245D200849304 /* AppDelegate.swift in Sources */,
+				351865062CEE7A28001C58C7 /* AddProductViewController.swift in Sources */,
+				3511986C2CD512C000CC6B14 /* SignInViewController.swift in Sources */,
+				3518650C2CEED79A001C58C7 /* AccountFarmerViewController.swift in Sources */,
+				356E93C72CF0958A00BCDB65 /* BuyerOTPViewController.swift in Sources */,
+				3511986E2CD5147800CC6B14 /* NetworkManager.swift in Sources */,
+				3518650A2CEED756001C58C7 /* ChatFarmerViewController.swift in Sources */,
+				356E93C92CF0C98300BCDB65 /* FarmInfoViewController.swift in Sources */,
+				351198662CD5045C00CC6B14 /* WelcomePageViewController.swift in Sources */,
+				35512E552CF4C65B0014D8EC /* CategoryCell.swift in Sources */,
+				352384BE2CE27B5D00DC071A /* MainPageBuyerViewController.swift in Sources */,
+				351865082CEED4F1001C58C7 /* OrdersFarmerViewController.swift in Sources */,
+				35512E572CF4C6B80014D8EC /* CategoryDetailViewController.swift in Sources */,
+				356E93CB2CF259A200BCDB65 /* FavouriteProductsViewController.swift in Sources */,
+				352384BC2CE2738900DC071A /* Model.swift in Sources */,
+				35512E592CF4CEDE0014D8EC /* ProductCell.swift in Sources */,
+				352384BA2CE25FC100DC071A /* PendingApproavalViewModel.swift in Sources */,
+				351865102CEED9B8001C58C7 /* CartBuyerViewController.swift in Sources */,
+				35512E5B2CF4E17F0014D8EC /* InventoryCell.swift in Sources */,
+				35A0B97E2CD245D200849304 /* SceneDelegate.swift in Sources */,
+				351865122CEED9C8001C58C7 /* AccountBuyerViewController.swift in Sources */,
+				356E93CD2CF25A0C00BCDB65 /* ChatsBuyerViewController.swift in Sources */,
+				3511986A2CD5128100CC6B14 /* BuyerRegistrationViewController.swift in Sources */,
+				351198702CD523B200CC6B14 /* MainPageFarmerViewController.swift in Sources */,
+				3518650E2CEED997001C58C7 /* OrdersBuyerViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		35A0B9862CD245D600849304 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				35A0B9872CD245D600849304 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		35A0B98A2CD245D600849304 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		35A0B98B2CD245D600849304 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		35A0B98D2CD245D600849304 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FarmerMarketApp/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Saltanat.FarmerMarketApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		35A0B98E2CD245D600849304 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FarmerMarketApp/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Saltanat.FarmerMarketApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		35A0B9732CD245D200849304 /* Build configuration list for PBXProject "FarmerMarketApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				35A0B98A2CD245D600849304 /* Debug */,
+				35A0B98B2CD245D600849304 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		35A0B98C2CD245D600849304 /* Build configuration list for PBXNativeTarget "FarmerMarketApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				35A0B98D2CD245D600849304 /* Debug */,
+				35A0B98E2CD245D600849304 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		351865132CEEE0B0001C58C7 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		351865142CEEE0B0001C58C7 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 351865132CEEE0B0001C58C7 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 35A0B9702CD245D200849304 /* Project object */;
+}
