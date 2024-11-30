@@ -15,14 +15,10 @@ class RegisterFarmerAPIView(APIView):
     permission_classes = []  # No permissions required, so anyone can access this endpoint
 
     def post(self, request, *args, **kwargs):
-        # Initialize serializer with request data for creating a farmer
         serializer = FarmerSerializer(data=request.data)
         if serializer.is_valid():
-            farmer = serializer.save()  
-            farmer.user.is_active = 'pending'
-            farmer.save()# Save the new farmer if data is valid
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        # Return validation errors if data is invalid
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Register a new buyer
@@ -89,32 +85,26 @@ class FarmerUserPageView(APIView):
     permission_classes = [IsAuthenticated]  # Only authenticated users can access this endpoint
 
     def get(self, request, *args, **kwargs):
-        # Ensure the user is a farmer by checking their role
         if request.user.role != 'farmer':
             return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
 
-        # Retrieve the farmer profile linked to the authenticated user
         try:
             farmer = Farmer.objects.get(user=request.user)
-            serializer = UserSerializer(farmer.user)  # Use UserSerializer for farmer's user info
+            serializer = FarmerSerializer(farmer)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Farmer.DoesNotExist:
             return Response({"error": "Farmer profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, *args, **kwargs):
-        # Ensure the user is a farmer by checking their role
         if request.user.role != 'farmer':
             return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
 
-        # Update the farmer's profile information
         try:
             farmer = Farmer.objects.get(user=request.user)
-            # Partially update the farmer's user data
-            serializer = UserSerializer(farmer.user, data=request.data, partial=True)
+            serializer = FarmerSerializer(farmer, data=request.data, partial=True)
             if serializer.is_valid():
-                serializer.save()  # Save the updated information if valid
+                serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            # Return validation errors if data is invalid
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Farmer.DoesNotExist:
             return Response({"error": "Farmer profile not found"}, status=status.HTTP_404_NOT_FOUND)

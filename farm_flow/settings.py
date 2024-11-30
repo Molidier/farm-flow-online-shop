@@ -105,7 +105,7 @@ password: AVNS_rAufI3FoPxaQsyguzJN
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",  # Use the PostgreSQL backend
-        "NAME": "test",  # Name of the database
+        "NAME": "latest",  # Name of the database
         "USER": "avnadmin",  # Username provided by Aiven
         "PASSWORD": "AVNS_rAufI3FoPxaQsyguzJN",  # Replace with the actual password
         "HOST": "team-f-nu-fa60.h.aivencloud.com",  # Aiven host
