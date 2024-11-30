@@ -7,48 +7,22 @@ class Category(models.Model):
     description = models.TextField(blank=True, null=True)  # Optional description for each category
 
     def __str__(self):
-        # Returns the category name when the Category object is represented as a string
         return self.name
 
 
-# Farm model to store details about a farm owned by a farmer
-class Farm(models.Model):
-    farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
-    farm_name = models.CharField(max_length=100)
-    farm_passport = models.CharField(max_length=50, unique=True)
-    farm_location = models.CharField(max_length=255, null=True, blank=True)
-
-    def __str__(self):
-        # Returns the farm name when the Farm object is represented as a string
-        return self.farm_name
-    
-
-# Product model representing an individual product from a farm
+# Product model representing an individual product directly linked to a farmer
 class Product(models.Model):
-    # Each product is linked to a farm; deleting the farm deletes associated products
-    farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
+    # Each product is now directly linked to a farmer (removed Farm reference)
+    farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE, null = True)  # Direct link to the farmer
     category = models.ForeignKey(Category, on_delete=models.SET_DEFAULT, default=1)  # FK with default value
     name = models.CharField(max_length=100)  # Name of the product
     price = models.DecimalField(max_digits=10, decimal_places=2)  # Product price with up to 2 decimal places
     description = models.TextField(null=True, blank=True)  # Optional product description
     image = models.ImageField(upload_to='product_images/', null=True, blank=True)  # Optional image for the product
+    quantity = models.FloatField(default=0)  # New field for quantity in kilograms (kg) as a double
 
     def __str__(self):
-        # Returns the product name when the Product object is represented as a string
         return self.name
-
-
-
-# Inventory model for tracking stock levels of each product in a farm
-class Inventory(models.Model):
-    farm = models.ForeignKey(Farm, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-    availability = models.BooleanField(default=True)
-
-    def __str__(self):
-        # Returns a string showing the product name and quantity in inventory
-        return f"{self.product.name} - {self.quantity}"
 
 
 # Cart model representing a shopping cart for a buyer
