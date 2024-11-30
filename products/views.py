@@ -3,9 +3,14 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .models import Product, Inventory, Farm, Category
-from .serializers import ProductSerializer, InventorySerializer, FarmSerializer, CategorySerializer
+from .models import Product, ProductImage, Inventory, Farm, Category, CartItem, Cart
+from .serializers import ProductSerializer, InventorySerializer, FarmSerializer, CategorySerializer , CartSerializer, CartItemSerializer
 from .permissions import IsFarmer
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import AllowAny
+from users.models import User, Buyer
+from users.serializers import BuyerSerializer
 
 # Set up a logger
 logger = logging.getLogger(__name__)
@@ -34,6 +39,7 @@ class CategoryListCreateAPIView(APIView):
 # View to create a new product associated with a farm
 class ProductCreateAPIView(APIView):
     permission_classes = [IsAuthenticated, IsFarmer]
+    parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request, *args, **kwargs):
         try:
@@ -44,7 +50,8 @@ class ProductCreateAPIView(APIView):
             # Pass the farm instance directly to the serializer's save method
             serializer = ProductSerializer(data=request.data, context={'request': request})
             if serializer.is_valid():
-                serializer.save(farm=farm)  # Set farm explicitly here
+                product = serializer.save(farm=farm)  # Set farm explicitly here
+                #product = serializer.save(farm = Farm.objects.get(farm_name='farm1'))  # TEST CODE
                 logger.info("Product created successfully")
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             
@@ -258,3 +265,97 @@ class FarmerFarmListAPIView(APIView):
         serializer = FarmSerializer(farms, many=True)
         logger.info(f"Retrieved farm list for farmer ID: {request.user.farmer.id}")
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+#cart views
+class CartView(APIView):
+    permission_classes = [IsAuthenticated]  # Only authenticated users can access their cart
+    
+    #to get the cart of the current user
+    def get(self, request, *args, **kwargs): 
+        try:
+            cart = Cart.objects.get(buyer=request.user.buyer)
+            serializer = CartSerializer(cart)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Cart.DoesNotExist:
+            return Response({"error": "Cart not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    #to make a new cart
+    def post(self, request, *args, **kwargs):
+        serializer = CartSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save(buyer=request.user.buyer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(request.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CartDeleteView(APIView):
+    permission_classes = [IsAuthenticated]  # only authenticated users can delete their cart
+    def delete(self, request, *args, **kwargs):
+        try:
+            cart = Cart.objects.get(buyer=request.user.buyer) #get the cart
+            cart.items.all().delete() #delete items
+            # Or delete the cart entirely
+            cart.delete()
+
+            return Response({"message": "Cart deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except Cart.DoesNotExist:
+            return Response({"error": "Cart not found."}, status=status.HTTP_404_NOT_FOUND)
+
+   
+class CartItemView(APIView):
+    permission_classes = [IsAuthenticated]  # only authenticated users can add items to their cart
+    #to add products to the cart
+    def post(self, request, *args, **kwargs):
+        cart_id = request.data.get('cart')
+        product_id = request.data.get('product')
+        quantity = request.data.get('quantity')
+
+        try:
+            cart = Cart.objects.get(id=cart_id, buyer=request.user.buyer)  # get the user's cart
+        except Cart.DoesNotExist:
+            return Response({"error": "Cart not found or you do not have access to this cart."}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Check if the product is already in the cart
+        existing_item = CartItem.objects.filter(cart=cart, product_id=product_id).first()
+        if existing_item:
+            # If item exists, update quantity
+            existing_item.quantity += quantity
+            existing_item.save()
+            return Response(CartItemSerializer(existing_item).data, status=status.HTTP_200_OK)
+        
+        # If item doesn't exist, create a new CartItem
+        data = {
+            "cart": cart.id,
+            "product": product_id,
+            "quantity": quantity,
+        }
+        
+        serializer = CartItemSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+        
+class CartItemDeleteView(APIView):
+    permission_classes = [IsAuthenticated]  # only authenticated users can delte their items
+    def delete(self, request, *args, **kwargs):
+        try:
+            # Ensure the cart item exists and belongs to the authenticated user's cart
+            cart_item = CartItem.objects.get(id=kwargs['item_id'], cart__buyer=request.user.buyer)
+            cart_item.delete()
+            return Response({"message": "Item removed successfully"}, status=status.HTTP_204_NO_CONTENT)
+        except CartItem.DoesNotExist:
+            # Handle the case where the item does not exist
+            return Response({"error": "Cart item not found or you do not have permission to delete it."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Handle unexpected errors
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        

@@ -3,7 +3,8 @@ from .views import (
     CategoryListCreateAPIView,
     ProductCreateAPIView, ProductDetailAPIView, 
     FarmerInventoryListCreateView, InventoryDetailUpdateDeleteView,
-    FarmListCreateAPIView, FarmDetailUpdateDeleteAPIView, FarmerFarmListAPIView
+    FarmListCreateAPIView, FarmDetailUpdateDeleteAPIView, FarmerFarmListAPIView, 
+    CartItemView, CartView, CartItemDeleteView, CartDeleteView
 )
 
 urlpatterns = [
@@ -21,5 +22,10 @@ urlpatterns = [
     # Farm endpoints
     path('farm/', FarmListCreateAPIView.as_view(), name='farm-create-list'),  # Create and list farms
     path('farm/<int:pk>/', FarmDetailUpdateDeleteAPIView.as_view(), name='farm-detail'),  # Retrieve, update, or delete a farm
-    path('farms/', FarmerFarmListAPIView.as_view(), name='farmer-farm-list')  # List all farms for a specific farmer
+    path('farms/', FarmerFarmListAPIView.as_view(), name='farmer-farm-list'),  # List all farms for a specific farmer
+
+    path('cart/', CartView.as_view(), name='cart-list-create'),
+    path('cart/', CartDeleteView.as_view(), name='delete-cart'),
+    path('cart/items/', CartItemView.as_view(), name='add-cart-item'),
+    path('cart/items/<int:item_id>/', CartItemDeleteView.as_view(), name='delete-cart-item')
 ]

@@ -31,13 +31,15 @@ class Product(models.Model):
     name = models.CharField(max_length=100)  # Name of the product
     price = models.DecimalField(max_digits=10, decimal_places=2)  # Product price with up to 2 decimal places
     description = models.TextField(null=True, blank=True)  # Optional product description
-    image = models.ImageField(upload_to='product_images/', null=True, blank=True)  # Optional image for the product
+    #image = models.ImageField(upload_to='product_images/', null=True, blank=True)  # Optional image for the product
 
     def __str__(self):
         # Returns the product name when the Product object is represented as a string
         return self.name
 
-
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='product_images/')
 
 # Inventory model for tracking stock levels of each product in a farm
 class Inventory(models.Model):
@@ -54,9 +56,12 @@ class Inventory(models.Model):
 # Cart model representing a shopping cart for a buyer
 class Cart(models.Model):
     buyer = models.ForeignKey('users.Buyer', on_delete=models.CASCADE)
-    created_date = models.DateField()
-    cart_status = models.CharField(max_length=50, choices=[('Active', 'Active'), ('Inactive', 'Inactive')])
-
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def total_price(self):
+        return sum(item.subtotal for item in self.items.all())
     def __str__(self):
         # Returns a string showing the cart ID and the buyer's first name
         return f"Cart {self.id} for {self.buyer.user.first_name}"
@@ -64,13 +69,20 @@ class Cart(models.Model):
 
 # CartItem model representing each product added to a cart by a buyer
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
+    quantity = models.PositiveIntegerField(default=1)
     price_per_unit = models.DecimalField(max_digits=10, decimal_places=2)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
     verified = models.BooleanField(default=False)
-    admin = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, limit_choices_to={'role': 'admin'})
+
+    def save(self, *args, **kwargs):
+        if not self.price_per_unit:  #it only sets if price_per_unit is not already set
+            self.price_per_unit = self.product.price
+        self.subtotal = self.price_per_unit * self.quantity
+        super().save(*args, **kwargs)
 
     def __str__(self):
         # Returns a string showing the quantity and product name in the cart
         return f"{self.quantity} of {self.product.name} in cart {self.cart.id}"
+    
