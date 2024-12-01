@@ -48,6 +48,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     phone_number = models.CharField(max_length=15, unique=True)
+    image = models.ImageField(upload_to='farmer_profile_pictures/', null=True, blank=True) 
     is_staff = models.BooleanField(default=False)
     is_active = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
     is_superuser = models.BooleanField(default=False)

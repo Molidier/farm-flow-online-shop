@@ -2,8 +2,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .models import Order, Payment, Delivery
-from .serializers import OrderSerializer, PaymentSerializer, DeliverySerializer
+from .models import Order
+from .serializers import OrderSerializer, OrderUpdateSerializer
 from users.models import Buyer, User
 from products.models import Product, Cart
 
@@ -26,6 +26,7 @@ class OrderView(APIView):
 
             # Create and return the new order
             order = Order.objects.create(cart=cart, buyer=cart.buyer)
+            order.process_order_with_atomicity()
             
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -53,66 +54,92 @@ class UserOrderHistoryView(APIView):
         except Buyer.DoesNotExist:
             return Response({"error": "No orders found for this user."}, status=status.HTTP_404_NOT_FOUND)
 
-# Payment View
-class PaymentCreateAPIView(APIView):
+       
+class ProcessPaymentView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
-        serializer = PaymentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class PaymentDetailAPIView(APIView):
-    def get(self, request, pk, *args, **kwargs):
         try:
-            payment = Payment.objects.get(pk=pk)
-        except Payment.DoesNotExist:
-            return Response({"error": "Payment not found"}, status=status.HTTP_404_NOT_FOUND)
+            order = Order.objects.get(id=kwargs['order_id'], buyer=request.user.buyer)
+        except Order.DoesNotExist:
+            return Response({"error": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = PaymentSerializer(payment)
-        return Response(serializer.data)
+        # Check if the order is eligible for payment
+        if order.payment_status != "PENDING":
+            return Response({"error": "Order payment is already processed or failed."}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Simulate payment processing logic (e.g., interacting with a payment gateway)
+        # For demonstration, we'll assume the payment is successful
+        payment_success = True  # payment gateway logic
 
-# Delivery View
-class DeliveryCreateAPIView(APIView):
+        if payment_success:
+            order.mark_as_paid()
+            return Response({"message": "Payment processed successfully."}, status=status.HTTP_200_OK)
+        else:
+            order.payment_status = "FAILED"
+            order.save()
+            return Response({"error": "Payment failed."}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class ProcessDeliveryView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
-        serializer = DeliverySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class DeliveryDetailAPIView(APIView):
-    def get(self, request, pk, *args, **kwargs):
         try:
-            delivery = Delivery.objects.get(pk=pk)
-        except Delivery.DoesNotExist:
-            return Response({"error": "Delivery not found"}, status=status.HTTP_404_NOT_FOUND)
+            order = Order.objects.get(id=kwargs['order_id'], buyer=request.user.buyer)
+        except Order.DoesNotExist:
+            return Response({"error": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = DeliverySerializer(delivery)
-        return Response(serializer.data)
+        # Check if the order is eligible for delivery
+        if order.status not in ["CONFIRMED", "SHIPPED"]:
+            return Response({"error": "Order cannot be delivered at this stage."}, status=status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request, pk, *args, **kwargs):
+        delivery_success = True
+        
+        if delivery_success:
+            order.mark_as_delivered()
+            return Response({"message": "Order marked as delivered."}, status=status.HTTP_200_OK)
+        
+
+class UpdateDeliveryAddressView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, *args, **kwargs):
         try:
-            delivery = Delivery.objects.get(pk=pk)
-        except Delivery.DoesNotExist:
-            return Response({"error": "Delivery not found"}, status=status.HTTP_404_NOT_FOUND)
+            order = Order.objects.get(id=kwargs['order_id'], buyer=request.user.buyer)
+        except Order.DoesNotExist:
+            return Response({"error": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = DeliverySerializer(delivery, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if order.status != "PENDING":
+            return Response({"error": "Delivery address cannot be updated for this order."}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk, *args, **kwargs):
+        new_address = request.data.get("delivery_address")
+        if not new_address:
+            return Response({"error": "Delivery address is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        order.delivery_address = new_address
+        order.save()
+        return Response({"message": "Delivery address updated successfully."}, status=status.HTTP_200_OK)
+
+class ConfirmOrderView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
         try:
-            delivery = Delivery.objects.get(pk=pk)
-        except Delivery.DoesNotExist:
-            return Response({"error": "Delivery not found"}, status=status.HTTP_404_NOT_FOUND)
+            order = Order.objects.get(id=kwargs['order_id'], buyer=request.user.buyer)
+        except Order.DoesNotExist:
+            return Response({"error": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        delivery.delete()
-        return Response({"message": "Delivery deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        # Ensure payment and delivery are completed
+        if order.payment_status != "PAID":
+            return Response({"error": "Payment is not completed for this order."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if order.status != "DELIVERED":
+            return Response({"error": "Order has not been delivered yet."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Mark the order as completed
+        order.status = "COMPLETED"
+        order.save()
+        return Response({"message": "Order confirmed successfully."}, status=status.HTTP_200_OK)
 
 

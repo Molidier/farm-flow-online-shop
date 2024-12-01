@@ -19,8 +19,12 @@ class FarmerSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
+        image = user_data.pop('image', None)
         user = User.objects.create_user(**user_data, role="farmer")  # Set role to "farmer"
         farmer = Farmer.objects.create(user=user, **validated_data)
+        if image:
+            user.image = image
+            user.save()
         return farmer
 
 
