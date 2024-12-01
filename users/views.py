@@ -81,33 +81,41 @@ class VerifyOTPView(APIView):
     
 
 # Farmer's user page view to retrieve and update their profile
+# Farmer's user page view to retrieve and update their profile
 class FarmerUserPageView(APIView):
     permission_classes = [IsAuthenticated]  # Only authenticated users can access this endpoint
 
     def get(self, request, *args, **kwargs):
+        # Ensure the user is a farmer by checking their role
         if request.user.role != 'farmer':
             return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
 
         try:
+            # Retrieve the farmer profile linked to the authenticated user
             farmer = Farmer.objects.get(user=request.user)
-            serializer = FarmerSerializer(farmer)
+            serializer = FarmerSerializer(farmer)  # Serialize the farmer's data
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Farmer.DoesNotExist:
             return Response({"error": "Farmer profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, *args, **kwargs):
+        # Ensure the user is a farmer by checking their role
         if request.user.role != 'farmer':
             return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
 
         try:
+            # Retrieve the farmer profile linked to the authenticated user
             farmer = Farmer.objects.get(user=request.user)
-            serializer = FarmerSerializer(farmer, data=request.data, partial=True)
+            serializer = FarmerSerializer(farmer, data=request.data, partial=True)  # Allow partial updates
             if serializer.is_valid():
+                # Save the updates
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
+            # Return validation errors if data is invalid
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Farmer.DoesNotExist:
             return Response({"error": "Farmer profile not found"}, status=status.HTTP_404_NOT_FOUND)
+
 
 # Buyer's user page view to retrieve and update their profile
 class BuyerUserPageView(APIView):
@@ -118,10 +126,10 @@ class BuyerUserPageView(APIView):
         if request.user.role != 'buyer':
             return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
 
-        # Retrieve the buyer profile linked to the authenticated user
         try:
+            # Retrieve the buyer profile linked to the authenticated user
             buyer = Buyer.objects.get(user=request.user)
-            serializer = BuyerSerializer(buyer)  # Use BuyerSerializer to include deliveryAdress
+            serializer = BuyerSerializer(buyer)  # Serialize the buyer's data
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Buyer.DoesNotExist:
             return Response({"error": "Buyer profile not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -131,13 +139,13 @@ class BuyerUserPageView(APIView):
         if request.user.role != 'buyer':
             return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
 
-        # Update the buyer's profile information
         try:
+            # Retrieve the buyer profile linked to the authenticated user
             buyer = Buyer.objects.get(user=request.user)
-            # Partially update the buyer's user data
-            serializer = BuyerSerializer(buyer, data=request.data, partial=True)
+            serializer = BuyerSerializer(buyer, data=request.data, partial=True)  # Allow partial updates
             if serializer.is_valid():
-                serializer.save()  # Save the updated information if valid
+                # Save the updates
+                serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             # Return validation errors if data is invalid
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
