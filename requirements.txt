@@ -8,5 +8,9 @@ sqlparse==0.5.1
 tzdata==2024.2
 django-cors-headers==4.0.0
 gunicorn==21.2.0
+uvicorn
 django-debug-toolbar==4.0.0  # Add this line for Debug Toolbar
 requests==2.31.0  # Add this line for requests module
+pillow
+channels
+daphne
