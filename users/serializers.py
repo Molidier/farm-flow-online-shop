@@ -13,13 +13,14 @@ class FarmerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Farmer
-        fields = ['id', 'user', 'Fname']
+        fields = ['id', 'user', 'Fname', 'farm_location', 'farm_size']  # Include new fields
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         user = User.objects.create_user(**user_data, role="farmer")  # Set role to "farmer"
         farmer = Farmer.objects.create(user=user, **validated_data)
         return farmer
+
 
 class BuyerSerializer(serializers.ModelSerializer):
     user = UserSerializer()

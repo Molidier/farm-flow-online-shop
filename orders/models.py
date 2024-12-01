@@ -1,5 +1,3 @@
-# orders/models.py
-
 from django.db import models
 from users.models import Buyer
 from products.models import Product

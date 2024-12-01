@@ -67,7 +67,10 @@ class Buyer(models.Model):
 class Farmer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     Fname = models.CharField(max_length=60)
-    #verified = models.BooleanField(default=False)
+    farm_location = models.CharField(max_length=255, default="not specified")  # Add farm_location
+    farm_size = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # Add farm_size (in acres, for example)
+
+
 
 # Proxy model for Verified Farmers
 class ApprovedFarmer(Farmer):
