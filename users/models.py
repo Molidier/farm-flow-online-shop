@@ -30,7 +30,6 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
         extra_fields["role"] = "admin"
         return self.create_user(email, phone_number, first_name, last_name, password=password, **extra_fields)
-
 class User(AbstractBaseUser, PermissionsMixin):
     STATUS_CHOICES = [
         ("pending", "Pending"),
@@ -53,11 +52,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
     is_superuser = models.BooleanField(default=False)
+    image = models.ImageField(upload_to='profile_images/', null=True, blank=True)  # Add image field
 
     objects = UserManager()
 
     USERNAME_FIELD = "phone_number"
     REQUIRED_FIELDS = ["email", "first_name", "last_name"]
+
 
 
 class Buyer(models.Model):

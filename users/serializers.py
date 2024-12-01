@@ -3,17 +3,19 @@ from .models import User, Farmer, Buyer, OTP
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    
+
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'password', 'image']
+        fields = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'password', 'role', 'image']
+        read_only_fields = ['id', 'role']  # Prevent role from being modified after creation
+
 
 class FarmerSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
     class Meta:
         model = Farmer
-        fields = ['id', 'user', 'Fname', 'farm_location', 'farm_size']  # Include new fields
+        fields = ['id', 'user', 'Fname', 'farm_location', 'farm_size']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
@@ -40,23 +42,21 @@ class BuyerSerializer(serializers.ModelSerializer):
         return buyer
 
     def update(self, instance, validated_data):
-        # Extract and handle user data separately
+        # Handle user data updates
         user_data = validated_data.pop('user', None)
-        
         if user_data:
-            # Access the User instance related to the Buyer
             user = instance.user
-            # Update fields on the User instance
             for attr, value in user_data.items():
                 setattr(user, attr, value)
-            user.save()  # Save User with updated fields
+            user.save()
 
-        # Update remaining Buyer fields
+        # Handle remaining buyer data updates
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
-        
+
         return instance
+
 
 class VerifyOTPSerializer(serializers.ModelSerializer):
     class Meta:
