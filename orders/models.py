@@ -1,32 +1,40 @@
 from django.db import models
 from users.models import Buyer
-from products.models import Product
+from products.models import Product, Cart
 
-class Orders(models.Model):
-    buyer = models.ForeignKey(Buyer, on_delete=models.CASCADE)
-    order_date = models.DateField()
-    order_status = models.CharField(max_length=50, null=True, blank=True)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('CONFIRMED', 'Confirmed'),
+        ('SHIPPED', 'Shipped'),
+        ('DELIVERED', 'Delivered'),
+        ('CANCELED', 'Canceled'),
+    ]
+
+    PAYMENT_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('PAID', 'Paid'),
+        ('FAILED', 'Failed'),
+    ]
+
+    cart = models.OneToOneField('products.Cart', on_delete=models.CASCADE, related_name='order')
+    buyer = models.ForeignKey('users.Buyer', on_delete=models.CASCADE, related_name='orders')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='PENDING')
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        self.total_price = self.cart.total_price()
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Order {self.id} by {self.buyer.name}"
-
-
-class OrderProduct(models.Model):
-    order = models.ForeignKey(Orders, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity_ordered = models.IntegerField()
-    price_at_purchase = models.DecimalField(max_digits=10, decimal_places=2)
-
-    class Meta:
-        unique_together = ('order', 'product')
-
-    def __str__(self):
-        return f"{self.product.name} in order {self.order.id}"
+        return f"Order {self.id} by {self.buyer.user.username}"
 
 
 class Payment(models.Model):
-    order = models.ForeignKey(Orders, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     payment_date = models.DateField()
     payment_method = models.CharField(max_length=50)
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -36,7 +44,7 @@ class Payment(models.Model):
 
 
 class Delivery(models.Model):
-    order = models.ForeignKey(Orders, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     delivery_type = models.CharField(max_length=50, choices=[('Home Delivery', 'Home Delivery'), ('Pickup Point', 'Pickup Point')])
     delivery_date = models.DateField()
     delivery_status = models.CharField(max_length=50)
