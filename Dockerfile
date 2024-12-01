@@ -13,4 +13,6 @@ COPY . /app/
 
 EXPOSE 8000
 
-CMD ["gunicorn", "farm_flow.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4"]
+ENV DJANGO_SETTINGS_MODULE=farm_flow.settings
+
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "-v", "2", "farm_flow.asgi:application"]

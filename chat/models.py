@@ -12,13 +12,19 @@ class Chat(models.Model):
     
     class Meta:
         unique_together = ['farmer', 'buyer']
+        app_label = 'chat'
     
 
 class Message(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='chat_message')
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='message_sender')
-    message = models.TextField()
+    message = models.TextField(blank=True, null=True)
+    attachment = models.URLField(blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.sender} - {self.chat} message"
+    
+    class Meta:
+        ordering = ['timestamp']
+        app_label = 'chat'

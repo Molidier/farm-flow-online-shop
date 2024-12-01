@@ -4,6 +4,8 @@ from rest_framework import status
 from .models import Chat, Message
 from .serializers import ChatSerializer, MessageSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
+from django.core.files.storage import default_storage
 
 class ChatView(APIView):
     permission_classes = [IsAuthenticated]
@@ -41,3 +43,17 @@ class MessageView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+
+class FileUploadView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        if 'file' not in request.FILES:
+            return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        file = request.FILES['file']
+        file_name = default_storage.save(file.name, file)
+        file_url = default_storage.url(file_name)
+
+        return Response({'file_url': file_url}, status=status.HTTP_201_CREATED)

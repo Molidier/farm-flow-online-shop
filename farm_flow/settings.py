@@ -1,5 +1,4 @@
 from datetime import timedelta
-
 from pathlib import Path
 
 
@@ -28,7 +27,6 @@ SIMPLE_JWT = {
 
 
 INSTALLED_APPS = [
-    "rest_framework.authtoken",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -36,6 +34,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # "debug_toolbar",
+    "channels",
+    "rest_framework.authtoken",
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
@@ -77,7 +77,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "farm_flow.wsgi.application"
-
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -174,3 +173,10 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'toksanbayamira4@gmail.com'
 EMAIL_HOST_PASSWORD = 'kgtt fjyv pjza vyqt'
 
+ASGI_APPLICATION = "farm_flow.asgi.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
