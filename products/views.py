@@ -5,6 +5,8 @@ from rest_framework import status
 from .models import Product, Category, Cart, CartItem
 from .serializers import ProductSerializer, CategorySerializer, CartItemSerializer, CartSerializer
 from users.models import User, Buyer
+from rest_framework.parsers import MultiPartParser, FormParser
+    
 
 
 class CategoryListCreateAPIView(APIView):
@@ -25,6 +27,7 @@ class CategoryListCreateAPIView(APIView):
 
 class ProductCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request, *args, **kwargs):
         serializer = ProductSerializer(data=request.data)

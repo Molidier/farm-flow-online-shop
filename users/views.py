@@ -9,10 +9,12 @@ from django.core.mail import BadHeaderError
 from smtplib import SMTPException
 import random
 from django.shortcuts import get_object_or_404
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 # Register a new farmer
 class RegisterFarmerAPIView(APIView):
     permission_classes = []  # No permissions required, so anyone can access this endpoint
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def post(self, request, *args, **kwargs):
         serializer = FarmerSerializer(data=request.data)
