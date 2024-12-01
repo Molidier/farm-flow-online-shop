@@ -2,82 +2,56 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .models import Orders, OrderProduct, Payment, Delivery
-from .serializers import OrdersSerializer, OrderProductSerializer, PaymentSerializer, DeliverySerializer
-from users.models import Buyer
-from products.models import Product
+from .models import Order, Payment, Delivery
+from .serializers import OrderSerializer, PaymentSerializer, DeliverySerializer
+from users.models import Buyer, User
+from products.models import Product, Cart
 
-# Orders View
-class OrdersCreateAPIView(APIView):
+class OrderView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request, *args, **kwargs):
-        serializer = OrdersSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class OrdersDetailAPIView(APIView):
-    def get(self, request, pk, *args, **kwargs):
         try:
-            order = Orders.objects.get(pk=pk)
-        except Orders.DoesNotExist:
-            return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+            cart = Cart.objects.get(id=kwargs['cart_id'], buyer=request.user.buyer)
+        except Cart.DoesNotExist:
+            return Response({"error": "Cart not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = OrdersSerializer(order)
-        return Response(serializer.data)
-
-    def put(self, request, pk, *args, **kwargs):
+        # create an order from the cart
         try:
-            order = Orders.objects.get(pk=pk)
-        except Orders.DoesNotExist:
-            return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+            if hasattr(cart, 'order'):
+                raise ValueError("An order has already been created for this cart.")
 
-        serializer = OrdersSerializer(order, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            # Ensure all items in the cart are verified
+            if any(item.is_bargain_requested for item in cart.items.all()):
+                raise ValueError("Not all items in the cart are verified. Some are still pending for the bargain")
 
-    def delete(self, request, pk, *args, **kwargs):
+            # Create and return the new order
+            order = Order.objects.create(cart=cart, buyer=cart.buyer)
+            
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    #to get all the orders made by buyer
+    def get(self, request, *args, **kwargs):
+        orders = Order.objects.filter(buyer=request.user.buyer)
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+# user order history view
+class UserOrderHistoryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
         try:
-            order = Orders.objects.get(pk=pk)
-        except Orders.DoesNotExist:
-            return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        order.delete()
-        return Response({"message": "Order deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-
-
-# OrderProduct View
-class OrderProductCreateAPIView(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = OrderProductSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class OrderProductDetailAPIView(APIView):
-    def get(self, request, pk, *args, **kwargs):
-        try:
-            order_product = OrderProduct.objects.get(pk=pk)
-        except OrderProduct.DoesNotExist:
-            return Response({"error": "OrderProduct not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = OrderProductSerializer(order_product)
-        return Response(serializer.data)
-
-    def delete(self, request, pk, *args, **kwargs):
-        try:
-            order_product = OrderProduct.objects.get(pk=pk)
-        except OrderProduct.DoesNotExist:
-            return Response({"error": "OrderProduct not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        order_product.delete()
-        return Response({"message": "OrderProduct deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-
+            buyer = user.buyer
+            orders = Order.objects.filter(buyer=buyer, status='CONFIRMED').order_by('-order_date')
+            serializer = OrderSerializer(orders, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Buyer.DoesNotExist:
+            return Response({"error": "No orders found for this user."}, status=status.HTTP_404_NOT_FOUND)
 
 # Payment View
 class PaymentCreateAPIView(APIView):
@@ -141,16 +115,4 @@ class DeliveryDetailAPIView(APIView):
         delivery.delete()
         return Response({"message": "Delivery deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
-# User Order History View
-class UserOrderHistoryAPIView(APIView):
-    permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        try:
-            buyer = user.buyer
-            orders = Orders.objects.filter(buyer=buyer).order_by('-order_date')
-            serializer = OrdersSerializer(orders, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Buyer.DoesNotExist:
-            return Response({"error": "No orders found for this user."}, status=status.HTTP_404_NOT_FOUND)
