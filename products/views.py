@@ -67,7 +67,7 @@ class ProductDetailAPIView(APIView):
 
 #cart views
 class CartView(APIView):
-    #permission_classes = [IsAuthenticated]  # Only authenticated users can access their cart
+    permission_classes = [IsAuthenticated]  # Only authenticated users can access their cart
     
     #to get the cart of the current user
     def get(self, request, *args, **kwargs): 
@@ -80,7 +80,6 @@ class CartView(APIView):
 
     #to make a new cart
     def post(self, request, *args, **kwargs):
-        #request.user =  User.objects.get(phone_number="1234567890")
         serializer = CartSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -103,10 +102,9 @@ class CartDeleteView(APIView):
 
    
 class CartItemView(APIView):
-    #permission_classes = [IsAuthenticated]  # only authenticated users can add items to their cart
+    permission_classes = [IsAuthenticated]  # only authenticated users can add items to their cart
     #to add products to the cart
     def post(self, request, *args, **kwargs):
-        request.user =  User.objects.get(phone_number="1234567890")
         cart_id = request.data.get('cart')
         product_id = request.data.get('product')
         quantity = request.data.get('quantity')
@@ -158,7 +156,6 @@ class CartItemDeleteView(APIView):
 class BargainRequestView(APIView):
     permission_classes = [IsAuthenticated]
     def patch(self, request, *args, **kwargs):
-        #request.user =  User.objects.get(phone_number="1234567890")
         try:
             cart_item = CartItem.objects.get(id=kwargs['item_id'], cart__buyer=request.user.buyer)
         except CartItem.DoesNotExist:
@@ -171,10 +168,9 @@ class BargainRequestView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class BargainResponseView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def get(self, request, *args, **kwargs):
         # Ensure only farmers can view bargain requests
-        request.user =  User.objects.get(phone_number="87713179047")
         if not request.user.role == 'farmer': 
             return Response({"error": "Unauthorized action."}, status=status.HTTP_403_FORBIDDEN)
         # Fetch all pending bargain requests for products owned by the farmer
@@ -188,7 +184,6 @@ class BargainResponseView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, *args, **kwargs):
-        request.user =  User.objects.get(phone_number="87713179047")
         try:
             cart_item = CartItem.objects.get(id=kwargs['item_id'])
         except CartItem.DoesNotExist:

@@ -21,11 +21,18 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def update_quantity(self, change):
+        new_quantity = self.quantity + change
+        if new_quantity < 0.0:
+            raise ValueError(f"Not enough stock for {self.name}. Only {self.quantity:.2f} units available.")
+        self.quantity = new_quantity
+        self.save()
 
 
 # cart model representing a shopping cart for a buyer
 class Cart(models.Model):
-    buyer = models.ForeignKey('users.Buyer', on_delete=models.CASCADE)
+    buyer = models.ForeignKey(Buyer, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -41,7 +48,7 @@ class Cart(models.Model):
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
+    quantity = models.FloatField(default=1.0)
     price_per_unit = models.DecimalField(max_digits=10, decimal_places=2)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
     is_bargain_requested = models.BooleanField(default=False)  # True if the buyer requests a new price
@@ -53,8 +60,7 @@ class CartItem(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        if not self.price_per_unit:  #it only sets if price_per_unit is not already set
-            self.price_per_unit = self.product.price
+        self.price_per_unit = self.product.price
         self.subtotal = self.price_per_unit * self.quantity
         super().save(*args, **kwargs)
 

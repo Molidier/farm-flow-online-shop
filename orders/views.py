@@ -26,6 +26,7 @@ class OrderView(APIView):
 
             # Create and return the new order
             order = Order.objects.create(cart=cart, buyer=cart.buyer)
+            order.process_order_with_atomicity()
             
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
