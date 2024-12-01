@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import Farmer, User, Buyer  # Importing Farmer and User models from users app
+from decimal import Decimal
 
 
 class Category(models.Model):
@@ -17,7 +18,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)  # Product price with up to 2 decimal places
     description = models.TextField(null=True, blank=True)  # Optional product description
     image = models.ImageField(upload_to='product_images/', null=True, blank=True)  # Optional image for the product
-    quantity = models.FloatField(default=0)  # Quantity in kilograms (kg)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1)  # Quantity in kilograms (kg)
 
     def __str__(self):
         return self.name
@@ -36,9 +37,11 @@ class Cart(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def total_price(self):
-        return sum(item.subtotal for item in self.items.all())
+        return sum(
+            Decimal(str(item.subtotal)) for item in self.items.all()
+        )
     
     def __str__(self):
         # Returns a string showing the cart ID and the buyer's first name
@@ -48,7 +51,7 @@ class Cart(models.Model):
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.FloatField(default=1.0)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1.00) 
     price_per_unit = models.DecimalField(max_digits=10, decimal_places=2)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
     is_bargain_requested = models.BooleanField(default=False)  # True if the buyer requests a new price
@@ -61,7 +64,8 @@ class CartItem(models.Model):
 
     def save(self, *args, **kwargs):
         self.price_per_unit = self.product.price
-        self.subtotal = self.price_per_unit * self.quantity
+        subtotal = self.quantity * self.price_per_unit
+        self.subtotal=subtotal.quantize(Decimal("0.01"))
         super().save(*args, **kwargs)
 
     def __str__(self):
