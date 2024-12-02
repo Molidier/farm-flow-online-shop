@@ -37,11 +37,11 @@ class CartItemSerializer(serializers.ModelSerializer):
             product = Product.objects.get(id=value.id)
         except Product.DoesNotExist:
             raise serializers.ValidationError("Product does not exist.")
-        requested_quantity = float(self.initial_data.get("quantity", 1.0))
+        '''requested_quantity = self.quantity
         if requested_quantity > product.quantity:
             raise serializers.ValidationError(f"Only {product.quantity} units are available for {product.name}.")
         if requested_quantity <= 0.0:
-            raise serializers.ValidationError("Requested quantity must be greater than 0.")
+            raise serializers.ValidationError("Requested quantity must be greater than 0.")'''
         return value
     
     def update(self, instance, validated_data):
