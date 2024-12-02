@@ -11,6 +11,71 @@ import random
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny
+from django.contrib.auth import authenticate
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+from .models import Farmer, Buyer, User
+from .serializers import FarmerSerializer, BuyerSerializer
+
+class LoginView(APIView):
+    permission_classes = [AllowAny]  # No authentication needed for login endpoint
+
+    def post(self, request, *args, **kwargs):
+        phone_number = request.data.get("phone_number")
+        password = request.data.get("password")
+
+        if not phone_number or not password:
+            return Response({"error": "Phone number and password are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Authenticate user by phone number
+        user = authenticate(request, username=phone_number, password=password)
+
+        if user is not None:
+            # Create JWT token for the authenticated user
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            refresh_token = str(refresh)
+
+            # Create DRF Token (API Token)
+            api_token, created = Token.objects.get_or_create(user=user)
+
+            # Check if the user is a farmer or a buyer and serialize accordingly
+            if hasattr(user, 'farmer'):  # Check if user has a related 'farmer' profile
+                farmer = user.farmer
+                farmer_serializer = FarmerSerializer(farmer)
+                return Response({
+                    "message": "Login successful",
+                    "access": access_token,
+                    "refresh": refresh_token,
+                    "api_token": api_token.key,
+                    "user": farmer_serializer.data
+                }, status=status.HTTP_200_OK)
+
+            elif hasattr(user, 'buyer'):  # Check if user has a related 'buyer' profile
+                buyer = user.buyer
+                buyer_serializer = BuyerSerializer(buyer)
+                return Response({
+                    "message": "Login successful",
+                    "access": access_token,
+                    "refresh": refresh_token,
+                    "api_token": api_token.key,
+                    "user": buyer_serializer.data
+                }, status=status.HTTP_200_OK)
+
+            else:
+                return Response({"error": "User profile not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            return Response({"error": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
+
 # Register a new farmer
 class RegisterFarmerAPIView(APIView):
     permission_classes = []  # No permissions required, so anyone can access this endpoint
