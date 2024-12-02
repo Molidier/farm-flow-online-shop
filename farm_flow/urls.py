@@ -23,6 +23,8 @@ urlpatterns = [
     path("orders/", include("orders.urls")),  # Include orders app URLs
     path("products/", include("products.urls")),  # Include products app URLs
     path("chat/", include("chat.urls")),
+    path("reports/", include("reports.urls")),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # for serving media files
 
 admin.site.index_title = 'Farm Flow'
