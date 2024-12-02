@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from .models import Product, Category, Cart, CartItem
 from .serializers import ProductSerializer, CategorySerializer, CartItemSerializer, CartSerializer
-from users.models import User, Buyer
+from users.models import User, Buyer, Farmer
 from rest_framework.parsers import MultiPartParser, FormParser
     
 
@@ -25,6 +25,24 @@ class CategoryListCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class FarmerProductsView(APIView):
+    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access this endpoint
+
+    def get(self, request, *args, **kwargs):
+        try:
+            # Fetch the farmer by ID
+            farmer = Farmer.objects.get(id=request.user.farmer.id)
+        except Farmer.DoesNotExist:
+            return Response({"error": "Farmer not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Get all products belonging to the farmer
+        products = Product.objects.filter(farmer=farmer)
+
+        # Serialize the product data
+        serializer = ProductSerializer(products, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 class ProductCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]

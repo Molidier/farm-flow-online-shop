@@ -8,7 +8,8 @@ from .views import (
     CartDeleteView,
     CartView,
     BargainRequestView,
-    BargainResponseView
+    BargainResponseView,
+    FarmerProductsView
 )
 
 urlpatterns = [
@@ -18,6 +19,7 @@ urlpatterns = [
     # Product endpoints
     path('product/', ProductCreateAPIView.as_view(), name='product-create'),
     path('product/<int:pk>/', ProductDetailAPIView.as_view(), name='product-detail'),
+    path('inventory/', FarmerProductsView.as_view(), name='inventory'),
 
     path('cart/', CartView.as_view(), name='cart-list-create'),
     path('cart/', CartDeleteView.as_view(), name='delete-cart'),
