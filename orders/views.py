@@ -4,8 +4,79 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .models import Order
 from .serializers import OrderSerializer, OrderUpdateSerializer
-from users.models import Buyer, User
+from users.models import Buyer, User, Farmer
 from products.models import Product, Cart
+from django.db.models import Sum, Count
+from datetime import datetime
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from io import BytesIO
+from django.http import FileResponse
+
+def get_farmer_sales_data(farmer):
+    orders = Order.objects.filter(cart__items__product__farmer=farmer, status="COMPLETED")
+    total_revenue = orders.aggregate(Sum('total_price'))['total_price__sum'] or 0
+    total_orders = orders.count()
+    total_products_sold = orders.aggregate(Sum('cart__items__quantity'))['cart__items__quantity__sum'] or 0
+
+    # Group orders by date for more detailed reporting
+    orders_by_date = orders.values('created_at__date').annotate(
+        total_revenue=Sum('total_price'),
+        total_orders=Count('id'),
+    )
+
+    return {
+        "total_revenue": total_revenue,
+        "total_orders": total_orders,
+        "total_products_sold": total_products_sold,
+        "orders_by_date": orders_by_date,
+    }
+
+def generate_pdf_report(data, farmer_name):
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    pdf.setTitle(f"{farmer_name} Sales Report")
+
+    # Header
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(50, 800, f"Sales Report for {farmer_name}")
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(50, 780, f"Date: {datetime.now().strftime('%Y-%m-%d')}")
+
+    # Summary
+    pdf.drawString(50, 750, f"Total Revenue: {data['total_revenue']}")
+    pdf.drawString(50, 730, f"Total Orders: {data['total_orders']}")
+    pdf.drawString(50, 710, f"Total Products Sold: {data['total_products_sold']}")
+
+    # Orders by Date
+    pdf.drawString(50, 680, "Orders by Date:")
+    y = 660
+    for order in data['orders_by_date']:
+        pdf.drawString(50, y, f"- {order['created_at__date']}: {order['total_orders']} orders, revenue: {order['total_revenue']}")
+        y -= 20
+
+    pdf.save()
+    buffer.seek(0)
+    return buffer
+
+class FarmerSalesReportView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        try:
+            farmer = Farmer.objects.get(id=kwargs['farmer_id'])
+
+            # Fetch sales data
+            sales_data = get_farmer_sales_data(farmer)
+
+            # Generate PDF
+            pdf_buffer = generate_pdf_report(sales_data, farmer_name=farmer.user.first_name)
+
+            # Return the PDF as a downloadable file
+            response = FileResponse(pdf_buffer, as_attachment=True, filename="sales_report.pdf")
+            return response
+
+        except Farmer.DoesNotExist:
+            return Response({"error": "Farmer not found."}, status=404)
 
 class OrderView(APIView):
     permission_classes = [IsAuthenticated]
@@ -25,7 +96,10 @@ class OrderView(APIView):
                 raise ValueError("Not all items in the cart are verified. Some are still pending for the bargain")
 
             # Create and return the new order
-            order = Order.objects.create(cart=cart, buyer=cart.buyer)
+            order = Order.objects.create(cart=cart, buyer=cart.buyer, 
+                    delivery_address=request.data.get('delivery_address', ''),
+                    payment_method=request.data.get('payment_method', 'Cash'),
+                    delivery_type=request.data.get('delivery_type', 'Home Delivery'),)
             order.process_order_with_atomicity()
             
         except ValueError as e:
