@@ -1,15 +1,6 @@
-//
-//  SignInViewController.swift
-//  FarmerMarketApp
-//
-//  Created by Saltanat on 01.11.2024.
-//
-
 import UIKit
 
 class SignInViewController: UIViewController {
-	private var selectedRole: String?
-
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		view.backgroundColor = .white
@@ -26,6 +17,7 @@ class SignInViewController: UIViewController {
 		textField.rightViewMode = .always
 		return textField
 	}()
+
 	private lazy var togglePasswordVisibilityButton: UIButton = {
 		let button = UIButton(type: .custom)
 		button.setImage(UIImage(systemName: "eye"), for: .normal)
@@ -33,25 +25,10 @@ class SignInViewController: UIViewController {
 		button.addTarget(self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
 		return button
 	}()
-	private let buyerButton: UIButton = {
-		let button = UIButton()
-		button.setTitle("I am Buyer", for: .normal)
-		button.backgroundColor = UIColor(red: 102 / 255, green: 187 / 255, blue: 106 / 255, alpha: 1.0)
-		button.layer.cornerRadius = 20
-		button.addTarget(self, action: #selector(selectBuyerRole), for: .touchUpInside)
-		return button
-	}()
-	private let farmerButton: UIButton = {
-		let button = UIButton()
-		button.setTitle("I am Farmer", for: .normal)
-		button.backgroundColor = UIColor(red: 255 / 255, green: 165 / 255, blue: 0 / 255, alpha: 1.0)
-		button.layer.cornerRadius = 20
-		button.addTarget(self, action: #selector(selectFarmerRole), for: .touchUpInside)
-		return button
-	}()
+
 	private let nextButton: UIButton = {
 		let button = UIButton()
-		button.setTitle("Next", for: .normal)
+		button.setTitle("Sign In", for: .normal)
 		button.backgroundColor = UIColor(red: 0 / 255, green: 122 / 255, blue: 255 / 255, alpha: 1.0)
 		button.layer.cornerRadius = 20
 		button.addTarget(self, action: #selector(nextButtonTapped), for: .touchUpInside)
@@ -61,38 +38,22 @@ class SignInViewController: UIViewController {
 	private func setupUI() {
 		view.addSubview(phoneTextField)
 		view.addSubview(passwordTextField)
-		view.addSubview(buyerButton)
-		view.addSubview(farmerButton)
 		view.addSubview(nextButton)
-		
+
 		phoneTextField.snp.makeConstraints { make in
 			make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(40)
 			make.leading.trailing.equalToSuperview().inset(24)
 			make.height.equalTo(44)
 		}
-		
+
 		passwordTextField.snp.makeConstraints { make in
 			make.top.equalTo(phoneTextField.snp.bottom).offset(16)
 			make.leading.trailing.equalToSuperview().inset(24)
 			make.height.equalTo(44)
 		}
-		
-		buyerButton.snp.makeConstraints { make in
-			make.top.equalTo(passwordTextField.snp.bottom).offset(30)
-			make.leading.equalToSuperview().inset(24)
-			make.width.equalTo(150)
-			make.height.equalTo(44)
-		}
-		
-		farmerButton.snp.makeConstraints { make in
-			make.top.equalTo(passwordTextField.snp.bottom).offset(30)
-			make.trailing.equalToSuperview().inset(24)
-			make.width.equalTo(150)
-			make.height.equalTo(44)
-		}
-		
+
 		nextButton.snp.makeConstraints { make in
-			make.top.equalTo(buyerButton.snp.bottom).offset(20)
+			make.top.equalTo(passwordTextField.snp.bottom).offset(30)
 			make.centerX.equalToSuperview()
 			make.width.equalTo(150)
 			make.height.equalTo(44)
@@ -111,14 +72,20 @@ class SignInViewController: UIViewController {
 		togglePasswordVisibilityButton.isSelected.toggle()
 	}
 
-	@objc private func selectBuyerRole() {
-		selectedRole = "buyer"
-		showMessage("Selected role: Buyer")
-	}
-
-	@objc private func selectFarmerRole() {
-		selectedRole = "farmer"
-		showMessage("Selected role: Farmer")
+	private func debugUserObject(user: UserWrapper) {
+		print("===== DEBUGGING USER OBJECT =====")
+		print("ID: \(user.id ?? -1)")
+		print("First Name: \(user.user.first_name)")
+		print("Last Name: \(user.user.last_name)")
+		print("Email: \(user.user.email)")
+		print("Phone Number: \(user.user.phone_number)")
+		print("Role: \(user.user.role)")
+		print("Image: \(user.user.image ?? "nil")")
+		print("Fname: \(user.Fname ?? "nil")")
+		print("Farm Location: \(user.farm_location ?? "nil")")
+		print("Farm Size: \(String(describing: user.farm_size))")
+		print("Delivery Address: \(user.deliveryAdress ?? "nil")")
+		print("==================================")
 	}
 
 	@objc private func nextButtonTapped() {
@@ -128,29 +95,36 @@ class SignInViewController: UIViewController {
 			return
 		}
 
-		guard let role = selectedRole else {
-			showError("Please select a role.")
-			return
-		}
+		NetworkManager.shared.authenticateUser(phoneNumber: phoneNumber, password: password) { [weak self] result in
+			DispatchQueue.main.async {
+				switch result {
+				case .success(let response):
+					NetworkManager.shared.accessToken = response.access
 
-		// Navigate to the appropriate page based on the role
-		if role == "buyer" {
-			let buyerTabBar = SceneDelegate().createBuyerTabBarController()
-			navigationController?.viewControllers = [buyerTabBar]
-		} else if role == "farmer" {
-			let farmerTabBar = SceneDelegate().createFarmerTabBarController()
-			navigationController?.viewControllers = [farmerTabBar]
+					self?.debugUserObject(user: response.user)
+
+					let user = response.user.user
+					switch user.role {
+					case "farmer":
+						print("Logged in as Farmer: \(user.first_name)")
+						let farmerTabBar = SceneDelegate().createFarmerTabBarController(farmer: response.user)
+						self?.navigationController?.viewControllers = [farmerTabBar]
+					case "buyer":
+						print("Logged in as Buyer: \(user.first_name)")
+						let buyerTabBar = SceneDelegate().createBuyerTabBarController(buyer: response.user)
+						self?.navigationController?.viewControllers = [buyerTabBar]
+					default:
+						self?.showError("Invalid user role.")
+					}
+				case .failure(let error):
+					self?.showError("Authentication failed: \(error.localizedDescription)")
+				}
+			}
 		}
 	}
 
 	private func showError(_ message: String) {
 		let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-		alert.addAction(UIAlertAction(title: "OK", style: .default))
-		present(alert, animated: true)
-	}
-
-	private func showMessage(_ message: String) {
-		let alert = UIAlertController(title: "Info", message: message, preferredStyle: .alert)
 		alert.addAction(UIAlertAction(title: "OK", style: .default))
 		present(alert, animated: true)
 	}

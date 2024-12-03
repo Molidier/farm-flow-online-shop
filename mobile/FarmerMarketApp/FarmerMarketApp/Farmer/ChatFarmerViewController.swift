@@ -5,75 +5,68 @@
 //  Created by Saltanat on 21.11.2024.
 //
 
+//
+//  FarmerChatsViewController.swift
+//  FarmerMarketApp
+//
+
 import UIKit
 import SnapKit
 
 class ChatFarmerViewController: UIViewController {
-	private let greetingLabel: UILabel = {
-		let label = UILabel()
-		label.text = "Your chats"
-		label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-		label.textColor = .black
-		return label
-	}()
+	private var chats: [Chat] = [] // Store list of chats
+	private let tableView = UITableView()
 	
-	private let navigationTitleLabel: UILabel = {
-		let label = UILabel()
-		label.text = "Chat"
-		label.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
-		label.textColor = .white
-		return label
-	}()
-	
-	private let notificationButton: UIButton = {
-		let button = UIButton(type: .system)
-		button.setImage(UIImage(systemName: "bell"), for: .normal)
-		button.tintColor = .white
-		return button
-	}()
-
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		setupView()
-	}
-	
-	private func setupView() {
 		view.backgroundColor = .white
-		
-		setupNavigationBar()
-		setupGreetingLabel()
+		title = "Chats"
+		setupUI()
+		fetchChats()
 	}
 	
-	private func setupNavigationBar() {
-		let navBarView = UIView()
-		navBarView.backgroundColor = UIColor(red: 34/255, green: 73/255, blue: 47/255, alpha: 1)
-
-		view.addSubview(navBarView)
-		navBarView.snp.makeConstraints { make in
-			make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-			make.leading.trailing.equalToSuperview()
-			make.height.equalTo(70)
-		}
-
-		navBarView.addSubview(navigationTitleLabel)
-		navigationTitleLabel.snp.makeConstraints { make in
-			make.centerY.equalToSuperview()
-			make.leading.equalToSuperview().offset(16)
-		}
-
-		navBarView.addSubview(notificationButton)
-		notificationButton.snp.makeConstraints { make in
-			make.centerY.equalToSuperview()
-			make.trailing.equalToSuperview().offset(-16)
+	private func setupUI() {
+		tableView.dataSource = self
+		tableView.delegate = self
+		tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ChatCell")
+		view.addSubview(tableView)
+		tableView.snp.makeConstraints { make in
+			make.edges.equalToSuperview()
 		}
 	}
-
 	
-	private func setupGreetingLabel() {
-		view.addSubview(greetingLabel)
-		greetingLabel.snp.makeConstraints { make in
-			make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(80)
-			make.leading.equalToSuperview().offset(16)
+	private func fetchChats() {
+		NetworkManager.shared.fetchFarmerChats { [weak self] result in
+			DispatchQueue.main.async {
+				switch result {
+				case .success(let chats):
+					self?.chats = chats
+					self?.tableView.reloadData()
+				case .failure(let error):
+					print("Failed to fetch chats: \(error)")
+				}
+			}
 		}
+	}
+}
+
+extension ChatFarmerViewController: UITableViewDataSource, UITableViewDelegate {
+	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+		return chats.count
+	}
+	
+	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+		let cell = tableView.dequeueReusableCell(withIdentifier: "ChatCell", for: indexPath)
+		let chat = chats[indexPath.row]
+		cell.textLabel?.text = "Chat with \(chat.buyerName)"
+		cell.accessoryType = .disclosureIndicator
+		return cell
+	}
+	
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		let chat = chats[indexPath.row]
+		let chatVC = ChatsBuyerViewController() 
+		chatVC.chatID = chat.id
+		navigationController?.pushViewController(chatVC, animated: true)
 	}
 }

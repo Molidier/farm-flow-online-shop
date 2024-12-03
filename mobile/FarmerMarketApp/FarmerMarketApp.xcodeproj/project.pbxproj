@@ -37,6 +37,11 @@
 		35A0B97E2CD245D200849304 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A0B97D2CD245D200849304 /* SceneDelegate.swift */; };
 		35A0B9852CD245D600849304 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 35A0B9842CD245D600849304 /* Assets.xcassets */; };
 		35A0B9882CD245D600849304 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 35A0B9872CD245D600849304 /* Base */; };
+		35B946EE2CFE4298005C6146 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 35B946ED2CFE4298005C6146 /* SDWebImage */; };
+		35B946F02CFE7F38005C6146 /* BuyerOrderPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B946EF2CFE7F38005C6146 /* BuyerOrderPageViewController.swift */; };
+		35B946F22CFE90BA005C6146 /* CartItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B946F12CFE90BA005C6146 /* CartItemCell.swift */; };
+		35B946F42CFF0B73005C6146 /* BargainCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B946F32CFF0B72005C6146 /* BargainCell.swift */; };
+		35B946F62CFF0C94005C6146 /* OrderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B946F52CFF0C94005C6146 /* OrderCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -71,6 +76,10 @@
 		35A0B9842CD245D600849304 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		35A0B9872CD245D600849304 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		35A0B9892CD245D600849304 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		35B946EF2CFE7F38005C6146 /* BuyerOrderPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyerOrderPageViewController.swift; sourceTree = "<group>"; };
+		35B946F12CFE90BA005C6146 /* CartItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartItemCell.swift; sourceTree = "<group>"; };
+		35B946F32CFF0B72005C6146 /* BargainCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BargainCell.swift; sourceTree = "<group>"; };
+		35B946F52CFF0C94005C6146 /* OrderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +87,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35B946EE2CFE4298005C6146 /* SDWebImage in Frameworks */,
 				351865152CEEE0B0001C58C7 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -117,6 +127,8 @@
 				35512E542CF4C65B0014D8EC /* CategoryCell.swift */,
 				35512E562CF4C6B80014D8EC /* CategoryDetailViewController.swift */,
 				35512E582CF4CEDE0014D8EC /* ProductCell.swift */,
+				35B946EF2CFE7F38005C6146 /* BuyerOrderPageViewController.swift */,
+				35B946F12CFE90BA005C6146 /* CartItemCell.swift */,
 			);
 			path = Buyer;
 			sourceTree = "<group>";
@@ -133,6 +145,8 @@
 				3518650B2CEED79A001C58C7 /* AccountFarmerViewController.swift */,
 				356E93C82CF0C98300BCDB65 /* FarmInfoViewController.swift */,
 				35512E5A2CF4E17F0014D8EC /* InventoryCell.swift */,
+				35B946F32CFF0B72005C6146 /* BargainCell.swift */,
+				35B946F52CFF0C94005C6146 /* OrderCell.swift */,
 			);
 			path = Farmer;
 			sourceTree = "<group>";
@@ -188,6 +202,7 @@
 			name = FarmerMarketApp;
 			packageProductDependencies = (
 				351865142CEEE0B0001C58C7 /* SnapKit */,
+				35B946ED2CFE4298005C6146 /* SDWebImage */,
 			);
 			productName = FarmerMarketApp;
 			productReference = 35A0B9782CD245D200849304 /* FarmerMarketApp.app */;
@@ -219,6 +234,7 @@
 			mainGroup = 35A0B96F2CD245D200849304;
 			packageReferences = (
 				351865132CEEE0B0001C58C7 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				35B946EC2CFE4297005C6146 /* XCRemoteSwiftPackageReference "SDWebImage" */,
 			);
 			productRefGroup = 35A0B9792CD245D200849304 /* Products */;
 			projectDirPath = "";
@@ -246,10 +262,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35B946F02CFE7F38005C6146 /* BuyerOrderPageViewController.swift in Sources */,
 				351198682CD5112A00CC6B14 /* FarmerRegistrationViewController.swift in Sources */,
 				356E93CF2CF3BE3A00BCDB65 /* ProductListViewController.swift in Sources */,
 				35A0B97C2CD245D200849304 /* AppDelegate.swift in Sources */,
 				351865062CEE7A28001C58C7 /* AddProductViewController.swift in Sources */,
+				35B946F22CFE90BA005C6146 /* CartItemCell.swift in Sources */,
 				3511986C2CD512C000CC6B14 /* SignInViewController.swift in Sources */,
 				3518650C2CEED79A001C58C7 /* AccountFarmerViewController.swift in Sources */,
 				356E93C72CF0958A00BCDB65 /* BuyerOTPViewController.swift in Sources */,
@@ -271,7 +289,9 @@
 				351865122CEED9C8001C58C7 /* AccountBuyerViewController.swift in Sources */,
 				356E93CD2CF25A0C00BCDB65 /* ChatsBuyerViewController.swift in Sources */,
 				3511986A2CD5128100CC6B14 /* BuyerRegistrationViewController.swift in Sources */,
+				35B946F62CFF0C94005C6146 /* OrderCell.swift in Sources */,
 				351198702CD523B200CC6B14 /* MainPageFarmerViewController.swift in Sources */,
+				35B946F42CFF0B73005C6146 /* BargainCell.swift in Sources */,
 				3518650E2CEED997001C58C7 /* OrdersBuyerViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -503,6 +523,14 @@
 				minimumVersion = 5.7.1;
 			};
 		};
+		35B946EC2CFE4297005C6146 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.20.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -510,6 +538,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 351865132CEEE0B0001C58C7 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		35B946ED2CFE4298005C6146 /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 35B946EC2CFE4297005C6146 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

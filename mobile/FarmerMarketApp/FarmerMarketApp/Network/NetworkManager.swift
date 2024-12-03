@@ -11,9 +11,11 @@ import UIKit
 class NetworkManager {
 	static let shared = NetworkManager()
 	private init() {}
+	let baseURL = "https://my-django-app22-109965421953.europe-north1.run.app/"
+	var accessToken: String?
 	
 	func registerFarmer(_ farmer: Farmer, completion: @escaping (Bool, String?) -> Void) {
-		guard let url = URL(string: "https://my-django-app8-109965421953.europe-north1.run.app/users/register/farmer/") else {
+		guard let url = URL(string: "\(baseURL)users/register/farmer/") else {
 			completion(false, "Invalid URL")
 			return
 		}
@@ -42,18 +44,18 @@ class NetworkManager {
 			}
 			
 			if httpResponse.statusCode == 201 {
-				completion(true, nil)
+				completion(true, "Successful registration")
 			} else {
 				let responseString = String(data: data, encoding: .utf8) ?? "Unable to decode response"
 				completion(false, "Server error: \(responseString)")
 			}
 		}.resume()
-
+		
 	}
-
+	
 	
 	func registerBuyer(_ buyer: Buyer, completion: @escaping (Bool, String?) -> Void) {
-		guard let url = URL(string: "https://my-django-app8-109965421953.europe-north1.run.app/users/register/buyer/") else {
+		guard let url = URL(string: "\(baseURL)users/register/buyer/") else {
 			completion(false, "Invalid URL")
 			return
 		}
@@ -76,244 +78,122 @@ class NetworkManager {
 				return
 			}
 			
-			guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 201 else {
+			guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 201 || httpResponse.statusCode == 200 else {
 				completion(false, "Failed to register buyer")
 				return
 			}
 			
-			completion(true, nil)
+			completion(true, "Successfully registered!")
 		}.resume()
 	}
 	
-	// MARK: Sign In
-//	func signInUser(phoneNumber: String, password: String, completion: @escaping (Bool, String?) -> Void) {
-//		guard let url = URL(string: "https://my-django-app8-109965421953.europe-north1.run.app/api/token/") else {
-//			print("Error: Invalid URL")
-//			completion(false, "Invalid URL")
-//			return
-//		}
-//
-//		var request = URLRequest(url: url)
-//		request.httpMethod = "POST"
-//		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-//
-//		let body: [String: String] = [
-//			"phone_number": phoneNumber,
-//			"password": password
-//		]
-//
-//		do {
-//			let jsonData = try JSONSerialization.data(withJSONObject: body, options: [])
-//			request.httpBody = jsonData
-//		} catch {
-//			print("Error: Failed to encode request body - \(error.localizedDescription)")
-//			completion(false, "Failed to encode request body")
-//			return
-//		}
-//
-//		URLSession.shared.dataTask(with: request) { data, response, error in
-//			if let error = error {
-//				print("Error: Network error - \(error.localizedDescription)")
-//				completion(false, "Network error: \(error.localizedDescription)")
-//				return
-//			}
-//
-//			guard let httpResponse = response as? HTTPURLResponse, let data = data else {
-//				print("Error: Invalid server response")
-//				completion(false, "Invalid server response")
-//				return
-//			}
-//
-//			if httpResponse.statusCode == 201 {
-//				do {
-//					if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: String],
-//					   let accessToken = jsonResponse["access"],
-//					   let refreshToken = jsonResponse["refresh"] {
-//						// Store tokens
-//						UserDefaults.standard.set(accessToken, forKey: "accessToken")
-//						UserDefaults.standard.set(refreshToken, forKey: "refreshToken")
-//
-//						// Fetch user details to determine the role
-//						self.fetchUserDetails(for: accessToken) { role, errorMessage in
-//							if let role = role {
-//								UserDefaults.standard.set(role, forKey: "userType")
-//								completion(true, nil)
-//							} else {
-//								completion(false, errorMessage ?? "Failed to determine user role")
-//							}
-//						}
-//					} else {
-//						completion(false, "Unexpected response format")
-//					}
-//				} catch {
-//					print("Error: Failed to decode JSON - \(error.localizedDescription)")
-//					completion(false, "Failed to decode server response")
-//				}
-//			} else {
-//				let responseString = String(data: data, encoding: .utf8) ?? "Unable to decode response"
-//				print("Error: Invalid credentials or server error")
-//				print("Server Error Response: \(responseString)")
-//				completion(false, "Invalid credentials")
-//			}
-//		}.resume()
-//	}
-
-//	func fetchUserDetails(for role: String, completion: @escaping (SignInResponse?, String?) -> Void) {
-//		let endpoint: String
-//		if role == "farmer" {
-//			endpoint = "users/farmer/userpage/"
-//		} else if role == "buyer" {
-//			endpoint = "users/buyer/userpage/"
-//		} else {
-//			completion(nil, "Invalid user role")
-//			return
-//		}
-//
-//		// Construct the full URL
-//		guard let url = URL(string: "http://my-django-app8-109965421953.europe-north1.run.app/\(endpoint)") else {
-//			completion(nil, "Invalid URL")
-//			return
-//		}
-//
-//		// Retrieve the access token
-//		guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
-//			completion(nil, "Access token not found")
-//			return
-//		}
-//
-//		var request = URLRequest(url: url)
-//		request.httpMethod = "GET"
-//		request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-//
-//		URLSession.shared.dataTask(with: request) { data, response, error in
-//			if let error = error {
-//				print("Error: \(error.localizedDescription)")
-//				completion(nil, "Network error: \(error.localizedDescription)")
-//				return
-//			}
-//
-//			guard let httpResponse = response as? HTTPURLResponse else {
-//				print("Error: Invalid response from server")
-//				completion(nil, "Invalid response from server")
-//				return
-//			}
-//
-//			if httpResponse.statusCode == 200 {
-//				do {
-//					if role == "farmer" {
-//						let farmerDetails = try JSONDecoder().decode(Farmer.self, from: data!)
-//						let response = SignInResponse(
-//							user: self.convertToSignInUser(from: farmerDetails.user),
-//							buyer: nil,
-//							farmer: farmerDetails
-//						)
-//						completion(response, nil)
-//					} else if role == "buyer" {
-//						let buyerDetails = try JSONDecoder().decode(Buyer.self, from: data!)
-//						let response = SignInResponse(
-//							user: self.convertToSignInUser(from: buyerDetails.user),
-//							buyer: buyerDetails,
-//							farmer: nil
-//						)
-//						completion(response, nil)
-//					}
-//
-//				} catch {
-//					print("Error decoding user details: \(error.localizedDescription)")
-//					completion(nil, "Failed to decode user details")
-//				}
-//			} else {
-//				print("Error: HTTP Status Code - \(httpResponse.statusCode)")
-//				completion(nil, "Invalid credentials or server error")
-//			}
-//		}.resume()
-//	}
-
-
-
-	
-	func fetchFarmerDetails(farmerID: Int, completion: @escaping (Farmer?, Error?) -> Void) {
-		guard let url = URL(string: "https://my-django-app8-109965421953.europe-north1.run.app/users/farmer/userpage/") else {
-			completion(nil, URLError(.badURL))
-			return
-		}
-		
+	// MARK: - Authenticate User
+	func authenticateUser(phoneNumber: String, password: String, completion: @escaping (Result<LoginResponse, Error>) -> Void) {
+		let url = URL(string: "\(baseURL)users/login/")!
 		var request = URLRequest(url: url)
 		request.httpMethod = "POST"
 		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-		let body: [String: Int] = ["farmer_id": farmerID]
+		
+		let body: [String: Any] = [
+			"phone_number": phoneNumber,
+			"password": password
+		]
 		
 		do {
 			request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
 		} catch {
-			completion(nil, error)
+			print("Error serializing JSON: \(error.localizedDescription)")
+			completion(.failure(error))
 			return
 		}
 		
-		URLSession.shared.dataTask(with: request) { data, response, error in
+		if let bodyString = String(data: request.httpBody!, encoding: .utf8) {
+			print("Request Body: \(bodyString)")
+		}
+		
+		let task = URLSession.shared.dataTask(with: request) { data, response, error in
+			// Handle network error
 			if let error = error {
-				completion(nil, error)
+				print("Network error: \(error.localizedDescription)")
+				completion(.failure(error))
+				return
+			}
+			
+			// Ensure the response is an HTTPURLResponse
+			guard let httpResponse = response as? HTTPURLResponse else {
+				let error = NSError(domain: "com.example.error", code: 0, userInfo: [
+					NSLocalizedDescriptionKey: "Invalid response from server"
+				])
+				completion(.failure(error))
+				return
+			}
+			
+			print("HTTP Response Code: \(httpResponse.statusCode)")
+			
+			guard (200...299).contains(httpResponse.statusCode) else {
+				let error = NSError(domain: "com.example.error", code: httpResponse.statusCode, userInfo: [
+					NSLocalizedDescriptionKey: "Server returned status code \(httpResponse.statusCode)"
+				])
+				completion(.failure(error))
 				return
 			}
 			
 			guard let data = data else {
-				completion(nil, URLError(.badServerResponse))
+				let error = NSError(domain: "com.example.error", code: 0, userInfo: [
+					NSLocalizedDescriptionKey: "No data received"
+				])
+				completion(.failure(error))
 				return
 			}
 			
-			do {
-				let farmer = try JSONDecoder().decode(Farmer.self, from: data)
-				completion(farmer, nil)
-			} catch {
-				completion(nil, error)
+			if let responseString = String(data: data, encoding: .utf8) {
+				print("Response Data: \(responseString)")
 			}
-		}.resume()
+			
+			do {
+				let loginResponse = try JSONDecoder().decode(LoginResponse.self, from: data)
+				completion(.success(loginResponse))
+			} catch let DecodingError.keyNotFound(key, context) {
+				print("❌ Key '\(key.stringValue)' not found:", context.debugDescription)
+				print("Coding Path:", context.codingPath)
+				completion(.failure(NSError(domain: "com.example.error", code: 1, userInfo: [
+					NSLocalizedDescriptionKey: "Missing key '\(key.stringValue)' in response."
+				])))
+			} catch let DecodingError.typeMismatch(type, context) {
+				print("❌ Type '\(type)' mismatch:", context.debugDescription)
+				print("Coding Path:", context.codingPath)
+				completion(.failure(NSError(domain: "com.example.error", code: 2, userInfo: [
+					NSLocalizedDescriptionKey: "Type mismatch for type '\(type)'."
+				])))
+			} catch let DecodingError.valueNotFound(value, context) {
+				print("❌ Value '\(value)' not found:", context.debugDescription)
+				print("Coding Path:", context.codingPath)
+				completion(.failure(NSError(domain: "com.example.error", code: 3, userInfo: [
+					NSLocalizedDescriptionKey: "Value not found: \(value)."
+				])))
+			} catch let DecodingError.dataCorrupted(context) {
+				print("❌ Data corrupted:", context.debugDescription)
+				print("Coding Path:", context.codingPath)
+				completion(.failure(NSError(domain: "com.example.error", code: 4, userInfo: [
+					NSLocalizedDescriptionKey: "Data corrupted in JSON response."
+				])))
+			} catch {
+				print("❌ Error decoding response:", error.localizedDescription)
+				completion(.failure(error))
+			}
+		}
+		
+		task.resume()
 	}
 	
-	func fetchBuyerDetails(buyerID: Int, completion: @escaping (Buyer?, Error?) -> Void) {
-		guard let url = URL(string: "https://my-django-app8-109965421953.europe-north1.run.app/users/buyer/userpage/") else {
-			completion(nil, URLError(.badURL))
-			return
-		}
-		
-		var request = URLRequest(url: url)
-		request.httpMethod = "POST"
-		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-		let body: [String: Int] = ["buyer_id": buyerID]
-		
-		do {
-			request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
-		} catch {
-			completion(nil, error)
-			return
-		}
-		
-		URLSession.shared.dataTask(with: request) { data, response, error in
-			if let error = error {
-				completion(nil, error)
-				return
-			}
-			
-			guard let data = data else {
-				completion(nil, URLError(.badServerResponse))
-				return
-			}
-			
-			do {
-				let buyer = try JSONDecoder().decode(Buyer.self, from: data)
-				completion(buyer, nil)
-			} catch {
-				completion(nil, error)
-			}
-		}.resume()
-	}
+	
 	
 	
 	
 	
 	
 	func sendOTP(phoneNumber: String, completion: @escaping (Bool) -> Void) {
-		guard let url = URL(string: "https://my-django-app8-109965421953.europe-north1.run.app/users/verify-otp/") else { return }
+		guard let url = URL(string: "\(baseURL)users/verify-otp/") else { return }
 		var request = URLRequest(url: url)
 		request.httpMethod = "POST"
 		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -344,43 +224,43 @@ class NetworkManager {
 	}
 	
 	func verifyOTP(email: String, otp: String, completion: @escaping (Bool, String?) -> Void) {
-		guard let url = URL(string: "https://my-django-app8-109965421953.europe-north1.run.app/users/verify-otp/") else {
+		guard let url = URL(string: "\(baseURL)users/verify-otp/") else {
 			completion(false, "Invalid URL")
 			return
 		}
-
+		
 		var request = URLRequest(url: url)
 		request.httpMethod = "POST"
 		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+		
 		let payload: [String: String] = [
 			"email": email,
 			"otp": otp
 		]
-
+		
 		do {
 			request.httpBody = try JSONSerialization.data(withJSONObject: payload, options: [])
 		} catch {
 			completion(false, "Failed to encode OTP payload")
 			return
 		}
-
+		
 		URLSession.shared.dataTask(with: request) { data, response, error in
 			if let error = error {
 				completion(false, "Network error: \(error.localizedDescription)")
 				return
 			}
-
+			
 			guard let data = data else {
 				completion(false, "No response data received")
 				return
 			}
-
+			
 			do {
 				if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
 				   let message = jsonResponse["message"] as? String {
 					print("Message: \(message)")
-					completion(true, nil) 
+					completion(true, nil)
 				} else {
 					completion(false, "Unexpected response format")
 				}
@@ -391,198 +271,423 @@ class NetworkManager {
 		}.resume()
 	}
 	
-	func fetchCategories(completion: @escaping ([Category]?, String?) -> Void) {
-		guard let url = URL(string: "https://my-django-app8-109965421953.europe-north1.run.app/products/category/") else {
-			completion(nil, "Invalid URL")
+	private func addAuthorizationHeader(to request: inout URLRequest) {
+		guard let token = accessToken else {
+			print("❌ Access token is missing. Authorization header cannot be set.")
+			return
+		}
+		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+	}
+	
+	func fetchCategories(completion: @escaping (Result<[Category], Error>) -> Void) {
+		guard let url = URL(string: "\(baseURL)products/category/") else {
+			completion(.failure(NetworkError.invalidURL))
+			return
+		}
+
+		var request = URLRequest(url: url)
+		request.httpMethod = "GET"
+		addAuthorizationHeader(to: &request) 
+
+		URLSession.shared.dataTask(with: request) { data, response, error in
+			if let error = error {
+				completion(.failure(error))
+				return
+			}
+
+			guard let data = data else {
+				completion(.failure(NetworkError.noData))
+				return
+			}
+
+			// Log the exact JSON response for debugging
+			if let responseString = String(data: data, encoding: .utf8) {
+				print("Categories API Raw Response: \(responseString)")
+			}
+
+			// Decode the response
+			do {
+				let categories = try JSONDecoder().decode([Category].self, from: data)
+				completion(.success(categories))
+			} catch {
+				print("❌ Error decoding categories: \(error.localizedDescription)")
+				completion(.failure(error))
+			}
+		}.resume()
+	}
+
+	
+	
+	
+	// MARK: - Fetch Products
+	func fetchProducts(completion: @escaping (Result<[Product], Error>) -> Void) {
+		guard let url = URL(string: "\(baseURL)products/product/") else {
+			completion(.failure(NetworkError.invalidURL))
 			return
 		}
 		
-		let task = URLSession.shared.dataTask(with: url) { data, response, error in
+		var request = URLRequest(url: url)
+		request.httpMethod = "GET"
+		addAuthorizationHeader(to: &request)
+		
+		URLSession.shared.dataTask(with: request) { data, response, error in
 			if let error = error {
-				completion(nil, error.localizedDescription)
+				completion(.failure(error))
 				return
 			}
 			
 			guard let data = data else {
-				completion(nil, "No data received")
+				completion(.failure(NetworkError.noData))
 				return
 			}
 			
 			do {
-				let decoder = JSONDecoder()
-				decoder.keyDecodingStrategy = .convertFromSnakeCase
-				let categories = try decoder.decode([Category].self, from: data)
-				completion(categories, nil)
+				let products = try JSONDecoder().decode([Product].self, from: data)
+				completion(.success(products))
 			} catch {
-				completion(nil, "Failed to parse categories: \(error.localizedDescription)")
+				completion(.failure(error))
 			}
-		}
-		task.resume()
+		}.resume()
 	}
 	
-//	func addProduct(product: Product, image: UIImage?, completion: @escaping (Bool, String?) -> Void) {
-//		guard let url = URL(string: "https://my-django-app8-109965421953.europe-north1.run.app/products/product/") else {
-//			completion(false, "Invalid URL")
-//			return
-//		}
-//		
-//		var request = URLRequest(url: url)
-//		request.httpMethod = "POST"
-//		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-//		
-//		do {
-//			let encoder = JSONEncoder()
-//			encoder.keyEncodingStrategy = .convertToSnakeCase
-//			var productData = try encoder.encode(product)
-//			
-//			if let image = image {
-//				if var productDict = try JSONSerialization.jsonObject(with: productData) as? [String: Any] {
-//					productDict["image"] = image.jpegData(compressionQuality: 0.7)?.base64EncodedString()
-//					productData = try JSONSerialization.data(withJSONObject: productDict)
-//				}
-//			}
-//			
-//			request.httpBody = productData
-//		} catch {
-//			completion(false, "Failed to encode product")
-//			return
-//		}
-//		
-//		let task = URLSession.shared.dataTask(with: request) { data, response, error in
-//			if let error = error {
-//				completion(false, "Network error: \(error.localizedDescription)")
-//				return
-//			}
-//			
-//			if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 201 {
-//				completion(true, nil)
-//			} else {
-//				completion(false, "Failed to add product")
-//			}
-//		}
-//		task.resume()
-//	}
-//	
-	func addFarm(farm: Farm, completion: @escaping (Bool, String?) -> Void) {
-		guard let url = URL(string: "https://my-django-app8-109965421953.europe-north1.run.app/products/farm/") else {
-			completion(false, "Invalid URL")
+	// MARK: - Post Product
+	func postProduct(product: Product, completion: @escaping (Result<Void, Error>) -> Void) {
+		guard let url = URL(string: "\(baseURL)products/product/") else {
+			print("DEBUG: Invalid URL")
 			return
 		}
 		
 		var request = URLRequest(url: url)
 		request.httpMethod = "POST"
-		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 		
-		do {
-			let encoder = JSONEncoder()
-			encoder.keyEncodingStrategy = .convertToSnakeCase
-			let data = try encoder.encode(farm)
-			request.httpBody = data
-			print("Payload: \(String(data: data, encoding: .utf8) ?? "")")
-		} catch {
-			completion(false, "Failed to encode farm data")
-			return
-		}
+		let boundary = UUID().uuidString
+		request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+		
+		// Add the Authorization header
+		addAuthorizationHeader(to: &request)
+		
+		let httpBody = createMultipartBody(product: product, boundary: boundary)
+		request.httpBody = httpBody
+		
+		print("DEBUG: Starting POST request with URL: \(url)")
+		print("DEBUG: HTTP Headers: \(request.allHTTPHeaderFields ?? [:])")
+		print("DEBUG: Request Body Size: \(httpBody.count) bytes")
 		
 		let task = URLSession.shared.dataTask(with: request) { data, response, error in
 			if let error = error {
-				print("Network Error: \(error.localizedDescription)")
-				completion(false, "Network error: \(error.localizedDescription)")
+				print("DEBUG: Network error: \(error.localizedDescription)")
+				completion(.failure(error))
 				return
 			}
 			
 			if let httpResponse = response as? HTTPURLResponse {
-				print("Status Code: \(httpResponse.statusCode)")
+				print("DEBUG: HTTP Response Code: \(httpResponse.statusCode)")
+				if let data = data, let responseBody = String(data: data, encoding: .utf8) {
+					print("DEBUG: Response Body: \(responseBody)")
+				}
 				
-				if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 {
-					completion(true, nil)
+				if httpResponse.statusCode == 201 {
+					completion(.success(()))
 				} else {
-					let errorMessage = data.flatMap { String(data: $0, encoding: .utf8) } ?? "Unknown error"
-					completion(false, "Failed to save farm details: \(errorMessage)")
+					let errorMessage = "Server responded with status code: \(httpResponse.statusCode)"
+					print("DEBUG: \(errorMessage)")
+					completion(.failure(NSError(domain: errorMessage, code: httpResponse.statusCode, userInfo: nil)))
 				}
 			} else {
-				completion(false, "Invalid response from server")
+				print("DEBUG: Invalid response")
+				completion(.failure(NSError(domain: "Invalid response", code: 0, userInfo: nil)))
 			}
 		}
 		task.resume()
 	}
-	// MARK: Check Farm Exists
-	func checkFarmExists(forFarmer farmer: Farmer, completion: @escaping (Bool) -> Void) {
-		guard let farmerId = farmer.id,
-			  let url = URL(string: "https://my-django-app8-109965421953.europe-north1.run.app/farms/check/") else {
-			completion(false)
-			return
+
+
+	private func createMultipartBody(product: Product, boundary: String) -> Data {
+		var body = Data()
+		
+		// Add form fields
+		body.append("--\(boundary)\r\n".data(using: .utf8)!)
+		body.append("Content-Disposition: form-data; name=\"farmer\"\r\n\r\n".data(using: .utf8)!)
+		body.append("\(product.farmer)\r\n".data(using: .utf8)!)
+		
+		body.append("--\(boundary)\r\n".data(using: .utf8)!)
+		body.append("Content-Disposition: form-data; name=\"category\"\r\n\r\n".data(using: .utf8)!)
+		body.append("\(product.category)\r\n".data(using: .utf8)!)
+		
+		body.append("--\(boundary)\r\n".data(using: .utf8)!)
+		body.append("Content-Disposition: form-data; name=\"name\"\r\n\r\n".data(using: .utf8)!)
+		body.append("\(product.name)\r\n".data(using: .utf8)!)
+		
+		body.append("--\(boundary)\r\n".data(using: .utf8)!)
+		body.append("Content-Disposition: form-data; name=\"price\"\r\n\r\n".data(using: .utf8)!)
+		body.append("\(product.price)\r\n".data(using: .utf8)!)
+		
+		body.append("--\(boundary)\r\n".data(using: .utf8)!)
+		body.append("Content-Disposition: form-data; name=\"description\"\r\n\r\n".data(using: .utf8)!)
+		body.append("\(product.description)\r\n".data(using: .utf8)!)
+		
+		body.append("--\(boundary)\r\n".data(using: .utf8)!)
+		body.append("Content-Disposition: form-data; name=\"quantity\"\r\n\r\n".data(using: .utf8)!)
+		body.append("\(product.quantity)\r\n".data(using: .utf8)!)
+		
+		// Add image file
+		if let imageData = product.image {
+			body.append("--\(boundary)\r\n".data(using: .utf8)!)
+			body.append("Content-Disposition: form-data; name=\"image\"; filename=\"image.jpg\"\r\n".data(using: .utf8)!)
+			body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+			body.append(imageData)
+			body.append("\r\n".data(using: .utf8)!)
 		}
 		
-		var request = URLRequest(url: url)
-		request.httpMethod = "POST"
-		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-		let requestBody: [String: Any] = ["farmer_id": farmerId]
-		
-		do {
-			request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
-		} catch {
-			print("Error encoding request body: \(error.localizedDescription)")
-			completion(false)
-			return
-		}
-		
-		URLSession.shared.dataTask(with: request) { data, response, error in
-			if let error = error {
-				print("Error checking farm existence: \(error.localizedDescription)")
-				completion(false)
-				return
-			}
-			
-			if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-				completion(true)
-			} else {
-				completion(false)
-			}
-		}.resume()
+		body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+		print("DEBUG: Multipart body constructed with size: \(body.count) bytes")
+		return body
 	}
 	
-	// MARK: Fetch Farm for Farmer
-	func fetchFarm(forFarmer farmer: Farmer, completion: @escaping (Farm?) -> Void) {
-		guard let farmerId = farmer.id,
-			  let url = URL(string: "https://my-django-app8-109965421953.europe-north1.run.app/farms/details/") else {
-			completion(nil)
+	func fetchFarmerProducts(farmerID: Int, completion: @escaping (Result<[Product], Error>) -> Void) {
+		guard let url = URL(string: "\(baseURL)products/product/\(farmerID)/") else {
+			completion(.failure(NetworkError.invalidURL))
 			return
 		}
 		
 		var request = URLRequest(url: url)
-		request.httpMethod = "POST"
-		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-		let requestBody: [String: Int] = ["farmer_id": farmerId]
-		
-		do {
-			request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
-		} catch {
-			print("Error encoding request body: \(error.localizedDescription)")
-			completion(nil)
-			return
-		}
+		request.httpMethod = "GET"
+		addAuthorizationHeader(to: &request)
 		
 		URLSession.shared.dataTask(with: request) { data, response, error in
 			if let error = error {
-				print("Error fetching farm: \(error.localizedDescription)")
-				completion(nil)
+				print("❌ Network error: \(error.localizedDescription)")
+				completion(.failure(error))
 				return
 			}
 			
 			guard let data = data else {
-				completion(nil)
+				print("❌ No data received from the server")
+				completion(.failure(NetworkError.noData))
+				return
+			}
+			
+			if let responseString = String(data: data, encoding: .utf8) {
+				print("DEBUG: Raw Response - \(responseString)")
+			} else {
+				print("DEBUG: Unable to decode server response to string.")
+			}
+
+			do {
+				let json = try JSONSerialization.jsonObject(with: data, options: [])
+				print("DEBUG: Decoded JSON Object - \(json)")
+			} catch {
+				print("DEBUG: JSON Serialization Error - \(error.localizedDescription)")
+			}
+			
+			do {
+				let products = try JSONDecoder().decode([Product].self, from: data)
+				completion(.success(products))
+			} catch {
+				print("❌ Decoding error: \(error.localizedDescription)")
+				print("DEBUG: Data received - \(data)")
+				completion(.failure(error))
+			}
+		}.resume()
+	}
+	func fetchMessages(for chatID: Int, completion: @escaping (Result<[Message], Error>) -> Void) {
+			guard let url = URL(string: "\(baseURL)chat/\(chatID)/") else {
+				completion(.failure(NetworkError.invalidURL))
+				return
+			}
+			
+			var request = URLRequest(url: url)
+			request.httpMethod = "GET"
+			addAuthorizationHeader(to: &request)
+			
+			URLSession.shared.dataTask(with: request) { data, response, error in
+				if let error = error {
+					completion(.failure(error))
+					return
+				}
+				
+				guard let data = data else {
+					completion(.failure(NetworkError.noData))
+					return
+				}
+				
+				do {
+					let messages = try JSONDecoder().decode([Message].self, from: data)
+					completion(.success(messages))
+				} catch {
+					completion(.failure(error))
+				}
+			}.resume()
+		}
+		
+	func sendMessage(chatID: Int, message: String, completion: @escaping (Bool) -> Void) {
+		guard let url = URL(string: "\(baseURL)chat/\(chatID)/") else {
+			completion(false)
+			return
+		}
+		
+		var request = URLRequest(url: url)
+		request.httpMethod = "POST"
+		addAuthorizationHeader(to: &request)
+		
+		let body: [String: Any] = [
+			"message": message
+		]
+		
+		do {
+			request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
+		} catch {
+			completion(false)
+			return
+		}
+		
+		URLSession.shared.dataTask(with: request) { _, response, error in
+			if let error = error {
+				print("Error sending message: \(error.localizedDescription)")
+				completion(false)
+				return
+			}
+			
+			guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 201 else {
+				completion(false)
+				return
+			}
+			
+			completion(true)
+		}.resume()
+	}
+	
+	func fetchFarmerChats(completion: @escaping (Result<[Chat], Error>) -> Void) {
+		guard let url = URL(string: "\(baseURL)chat/") else {
+			completion(.failure(NetworkError.invalidURL))
+			return
+		}
+		
+		var request = URLRequest(url: url)
+		request.httpMethod = "GET"
+		addAuthorizationHeader(to: &request)
+		
+		URLSession.shared.dataTask(with: request) { data, response, error in
+			if let error = error {
+				completion(.failure(error))
+				return
+			}
+			
+			guard let data = data else {
+				completion(.failure(NetworkError.noData))
 				return
 			}
 			
 			do {
-				let farm = try JSONDecoder().decode(Farm.self, from: data)
-				completion(farm)
+				let chats = try JSONDecoder().decode([Chat].self, from: data)
+				completion(.success(chats))
 			} catch {
-				print("Error decoding farm data: \(error.localizedDescription)")
-				completion(nil)
+				completion(.failure(error))
 			}
 		}.resume()
 	}
 	
+	func fetchAllProducts(completion: @escaping (Result<[Product], Error>) -> Void) {
+		guard let url = URL(string: "\(baseURL)products/product/") else {
+			completion(.failure(NetworkError.invalidURL))
+			print("❌ Invalid URL for fetching products.")
+			return
+		}
+		
+		var request = URLRequest(url: url)
+		request.httpMethod = "GET"
+		addAuthorizationHeader(to: &request)
+		
+		URLSession.shared.dataTask(with: request) { data, response, error in
+			if let error = error {
+				print("❌ Network Error: \(error.localizedDescription)")
+				completion(.failure(error))
+				return
+			}
+			
+			// Validate response and data
+			guard let httpResponse = response as? HTTPURLResponse else {
+				print("❌ Invalid Response: Not an HTTP URL response.")
+				completion(.failure(NetworkError.invalidResponse))
+				return
+			}
+			
+			print("✅ HTTP Response Code: \(httpResponse.statusCode)")
+			
+			guard (200...299).contains(httpResponse.statusCode) else {
+				print("❌ Server Error: \(httpResponse.statusCode)")
+				completion(.failure(NetworkError.invalidResponse))
+				return
+			}
+			
+			guard let data = data else {
+				print("❌ No Data Received.")
+				completion(.failure(NetworkError.noData))
+				return
+			}
+			
+			// Attempt to decode the data
+			do {
+				let products = try JSONDecoder().decode([Product].self, from: data)
+				print("✅ Successfully Decoded Products: \(products.count) items.")
+				completion(.success(products))
+			} catch {
+				print("❌ Decoding Error: \(error.localizedDescription)")
+				print("DEBUG: Raw Data - \(String(data: data, encoding: .utf8) ?? "Invalid Data")")
+				completion(.failure(error))
+			}
+		}.resume()
+	}
+	func fetchFarmer(by id: Int, completion: @escaping (Result<Farmer, Error>) -> Void) {
+		guard let url = URL(string: "\(baseURL)farmers/\(id)/") else {
+			completion(.failure(NetworkError.invalidURL))
+			return
+		}
+
+		var request = URLRequest(url: url)
+		request.httpMethod = "GET"
+		addAuthorizationHeader(to: &request) // Add token if required
+
+		URLSession.shared.dataTask(with: request) { data, response, error in
+			if let error = error {
+				print("❌ Network error: \(error.localizedDescription)")
+				completion(.failure(error))
+				return
+			}
+
+			guard let data = data else {
+				print("❌ No data received.")
+				completion(.failure(NetworkError.noData))
+				return
+			}
+
+			do {
+				let farmer = try JSONDecoder().decode(Farmer.self, from: data)
+				completion(.success(farmer))
+			} catch {
+				print("❌ Decoding error: \(error.localizedDescription)")
+				completion(.failure(error))
+			}
+		}.resume()
+	}
+
 }
+
+	// MARK: - Network Error Enum
+enum NetworkError: LocalizedError {
+	case invalidURL
+	case noData
+	case invalidResponse
+	
+	var errorDescription: String? {
+		switch self {
+		case .invalidURL:
+			return "The URL is invalid."
+		case .noData:
+			return "No data was received from the server."
+		case .invalidResponse:
+			return "The server response was invalid."
+		}
+	}
+}
+

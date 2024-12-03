@@ -4,15 +4,19 @@
 //
 //  Created by Saltanat on 25.11.2024.
 //
-
+// MARK: - InventoryCell
 import UIKit
+import SnapKit
 
 class InventoryCell: UITableViewCell {
 	
 	private let productImageView = UIImageView()
-	private let productDetailsLabel = UILabel()
+	private let nameLabel = UILabel()
+	private let categoryLabel = UILabel()
+	private let priceLabel = UILabel()
+	private let quantityLabel = UILabel()
+	private let descriptionLabel = UILabel()
 	private let outOfStockLabel = UILabel()
-	private let editButton = UIButton()
 	
 	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -24,79 +28,96 @@ class InventoryCell: UITableViewCell {
 	}
 	
 	private func setupUI() {
-		
-		contentView.layer.cornerRadius = 10
-		contentView.layer.masksToBounds = true
-		
+		// Product Image
 		productImageView.contentMode = .scaleAspectFit
 		productImageView.layer.cornerRadius = 8
-		productImageView.layer.masksToBounds = true
+		productImageView.clipsToBounds = true
 		contentView.addSubview(productImageView)
-		productImageView.snp.makeConstraints { make in
-			make.top.equalToSuperview().offset(10)
-			make.leading.equalToSuperview().offset(10)
-			make.width.height.equalTo(80)
-		}
 		
+		// Name Label
+		nameLabel.font = UIFont.boldSystemFont(ofSize: 16)
+		nameLabel.textColor = .black
+		contentView.addSubview(nameLabel)
+		
+		// Category Label
+		categoryLabel.font = UIFont.systemFont(ofSize: 12)
+		categoryLabel.textColor = .darkGray
+		contentView.addSubview(categoryLabel)
+		
+		// Price Label
+		priceLabel.font = UIFont.systemFont(ofSize: 14)
+		priceLabel.textColor = .systemGreen
+		contentView.addSubview(priceLabel)
+		
+		// Quantity Label
+		quantityLabel.font = UIFont.systemFont(ofSize: 14)
+		quantityLabel.textColor = .darkGray
+		contentView.addSubview(quantityLabel)
+		
+		// Description Label
+		descriptionLabel.font = UIFont.systemFont(ofSize: 12)
+		descriptionLabel.textColor = .darkGray
+		contentView.addSubview(descriptionLabel)
+		
+		// Out of Stock Label
 		outOfStockLabel.text = "OUT OF STOCK"
-		outOfStockLabel.font = UIFont.boldSystemFont(ofSize: 16)
+		outOfStockLabel.font = UIFont.boldSystemFont(ofSize: 12)
 		outOfStockLabel.textColor = .white
-		outOfStockLabel.backgroundColor = .red
+		outOfStockLabel.backgroundColor = .systemRed
 		outOfStockLabel.textAlignment = .center
-		outOfStockLabel.layer.cornerRadius = 5
-		outOfStockLabel.layer.masksToBounds = true
-		contentView.addSubview(outOfStockLabel)
-		outOfStockLabel.snp.makeConstraints { make in
-			make.top.equalToSuperview().offset(10)
-			make.trailing.equalToSuperview().offset(-10)
-			make.width.equalTo(120)
-			make.height.equalTo(30)
-		}
-		
-		productDetailsLabel.numberOfLines = 0
-		productDetailsLabel.font = UIFont.systemFont(ofSize: 14)
-		productDetailsLabel.textColor = .black
-		contentView.addSubview(productDetailsLabel)
-		productDetailsLabel.snp.makeConstraints { make in
-			make.top.equalTo(productImageView.snp.top)
-			make.leading.equalTo(productImageView.snp.trailing).offset(10)
-			make.trailing.equalToSuperview().inset(10)
-			make.bottom.lessThanOrEqualToSuperview().inset(10)
-		}
-		
-		editButton.setImage(UIImage(systemName: "pencil"), for: .normal)
-		editButton.tintColor = .black
-		contentView.addSubview(editButton)
-		editButton.snp.makeConstraints { make in
-			make.top.equalTo(outOfStockLabel.snp.bottom).offset(10)
-			make.trailing.equalToSuperview().offset(-10)
-			make.width.height.equalTo(30)
-		}
-	}
-	
-	func configure(with product: Product) {
-		productImageView.image = UIImage(named: product.imageName)
-		
-		productDetailsLabel.text = """
-			Product: \(product.name)
-			Category: \(product.category)
-			Price: \(String(format: "%.2f", product.price))KZT
-			Quantity: \(product.quantity)
-			Description: \(product.description)
-		"""
-		
-		outOfStockLabel.isHidden = product.quantity > 0
-		
-		if product.quantity > 0 {
-					contentView.backgroundColor = UIColor(red: 102/255, green: 187/255, blue: 106/255, alpha: 1.0) // Green
-				} else {
-					contentView.backgroundColor = UIColor(red: 255/255, green: 235/255, blue: 235/255, alpha: 1) // Red
-				}
-	}
-	
-	override func prepareForReuse() {
-		super.prepareForReuse()
-		contentView.backgroundColor = UIColor(red: 102/255, green: 187/255, blue: 106/255, alpha: 1.0)
 		outOfStockLabel.isHidden = true
+		contentView.addSubview(outOfStockLabel)
+		
+		// Constraints
+		productImageView.snp.makeConstraints { make in
+			make.leading.equalToSuperview().offset(16)
+			make.centerY.equalToSuperview()
+			make.width.height.equalTo(60)
+		}
+		
+		nameLabel.snp.makeConstraints { make in
+			make.top.equalToSuperview().offset(8)
+			make.leading.equalTo(productImageView.snp.trailing).offset(12)
+		}
+		
+		categoryLabel.snp.makeConstraints { make in
+			make.top.equalTo(nameLabel.snp.bottom).offset(4)
+			make.leading.equalTo(nameLabel)
+		}
+		
+		priceLabel.snp.makeConstraints { make in
+			make.top.equalTo(categoryLabel.snp.bottom).offset(4)
+			make.leading.equalTo(nameLabel)
+		}
+		
+		quantityLabel.snp.makeConstraints { make in
+			make.top.equalTo(priceLabel.snp.bottom).offset(4)
+			make.leading.equalTo(nameLabel)
+		}
+		
+		descriptionLabel.snp.makeConstraints { make in
+			make.top.equalTo(quantityLabel.snp.bottom).offset(4)
+			make.leading.equalTo(nameLabel)
+			make.trailing.equalToSuperview().inset(16)
+		}
+		
+		outOfStockLabel.snp.makeConstraints { make in
+			make.trailing.equalToSuperview().inset(16)
+			make.top.equalToSuperview().offset(8)
+			make.width.equalTo(100)
+			make.height.equalTo(20)
+		}
+	}
+	
+	func configure(with product: Products) {
+		productImageView.image = UIImage(named: product.imageName)
+		nameLabel.text = "Product: \(product.name)"
+		categoryLabel.text = "Category: \(product.category)"
+		priceLabel.text = "Price: \(String(format: "%.2f", product.price)) KZT"
+		quantityLabel.text = "Quantity: \(product.quantity)"
+		descriptionLabel.text = "Description: \(product.description)"
+		
+		// Show "OUT OF STOCK" label if quantity is 0
+		outOfStockLabel.isHidden = product.quantity > 0
 	}
 }

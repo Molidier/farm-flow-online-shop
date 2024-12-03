@@ -28,15 +28,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UNUserNotificationCente
 	}
 
 	// MARK: Switch to Buyer Tab Bar
-	func switchToBuyerTabBar() {
-		let buyerTabBarController = createBuyerTabBarController()
+	func switchToBuyerTabBar(buyer: UserWrapper?) {
+		guard let buyer = buyer else {
+			print("❌ Error: Buyer object is nil.")
+			return
+		}
+		let buyerTabBarController = createBuyerTabBarController(buyer: buyer)
 		window?.rootViewController = buyerTabBarController
 		window?.makeKeyAndVisible()
 	}
 
 	// MARK: Switch to Farmer Tab Bar
-	func switchToFarmerTabBar() {
-		let farmerTabBarController = createFarmerTabBarController()
+	func switchToFarmerTabBar(farmer: UserWrapper) {
+		let farmerTabBarController = createFarmerTabBarController(farmer: farmer)
 		window?.rootViewController = farmerTabBarController
 		window?.makeKeyAndVisible()
 	}
@@ -54,38 +58,41 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UNUserNotificationCente
 	}
 
 	// MARK: Create Buyer Tab Bar Controller
-	func createBuyerTabBarController() -> UITabBarController {
+	func createBuyerTabBarController(buyer: UserWrapper?) -> UITabBarController {
 		let tabBarController = UITabBarController()
-
+		
 		let mainPageVC = MainPageBuyerViewController()
+		mainPageVC.buyer = buyer
 		mainPageVC.view.backgroundColor = .white
 		mainPageVC.tabBarItem = UITabBarItem(title: "Explore", image: UIImage(systemName: "magnifyingglass"), tag: 0)
-
-		let favouriteVC = FavouriteProductsViewController()
-		favouriteVC.view.backgroundColor = .white
-		favouriteVC.tabBarItem = UITabBarItem(title: "Favourite", image: UIImage(systemName: "heart"), tag: 1)
-
+		
+		let orderVC = OrdersBuyerViewController()
+		orderVC.view.backgroundColor = .white
+		orderVC.tabBarItem = UITabBarItem(title: "My orders", image: UIImage(systemName: "heart"), tag: 1)
+		
 		let cartVC = CartBuyerViewController()
 		cartVC.view.backgroundColor = .white
 		cartVC.tabBarItem = UITabBarItem(title: "Cart", image: UIImage(systemName: "cart"), tag: 2)
-
+		
 		let chatsVC = ChatsBuyerViewController()
 		chatsVC.view.backgroundColor = .white
 		chatsVC.tabBarItem = UITabBarItem(title: "Chats", image: UIImage(systemName: "message"), tag: 3)
-
+		
 		let accountVC = AccountBuyerViewController()
 		accountVC.view.backgroundColor = .white
 		accountVC.tabBarItem = UITabBarItem(title: "Account", image: UIImage(systemName: "person"), tag: 4)
-
-		tabBarController.viewControllers = [mainPageVC, favouriteVC, cartVC, chatsVC, accountVC]
+		
+		tabBarController.viewControllers = [mainPageVC, orderVC, cartVC, chatsVC, accountVC]
 		return tabBarController
 	}
 
-	// MARK: Create Farmer Tab Bar Controller
-	func createFarmerTabBarController() -> UITabBarController {
-		let tabBarController = UITabBarController()
 
+	// MARK: Create Farmer Tab Bar Controller
+	func createFarmerTabBarController(farmer: UserWrapper) -> UITabBarController {
+		let tabBarController = UITabBarController()
+		
 		let homeVC = MainPageFarmerViewController()
+		homeVC.farmer = farmer
 		homeVC.view.backgroundColor = .white
 		homeVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), tag: 0)
 
@@ -95,6 +102,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UNUserNotificationCente
 
 		let addProductVC = AddProductViewController()
 		addProductVC.view.backgroundColor = .white
+		addProductVC.farmerID = farmer.id!
 		addProductVC.tabBarItem = UITabBarItem(title: "Add Product", image: UIImage(systemName: "plus.circle"), tag: 2)
 
 		let chatVC = ChatFarmerViewController()

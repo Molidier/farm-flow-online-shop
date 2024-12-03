@@ -2,12 +2,16 @@ import UIKit
 import SnapKit
 
 class ProductCell: UITableViewCell {
-	
 	private let productImageView = UIImageView()
 	private let nameLabel = UILabel()
 	private let priceLabel = UILabel()
-	private let quantityLabel = UILabel()
+	private let availableQuantityLabel = UILabel()
 	private let descriptionLabel = UILabel()
+	private let addToCartButton = UIButton()
+	private let quantityStepper = UIStepper()
+	private let selectedQuantityLabel = UILabel()
+	
+	var onAddToCart: ((Int) -> Void)?
 	
 	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -19,73 +23,119 @@ class ProductCell: UITableViewCell {
 	}
 	
 	private func setupUI() {
+		// Product Image
 		productImageView.contentMode = .scaleAspectFit
 		productImageView.layer.cornerRadius = 8
 		productImageView.layer.masksToBounds = true
 		contentView.addSubview(productImageView)
 		
-		nameLabel.font = UIFont.boldSystemFont(ofSize: 18)
+		// Product Name
+		nameLabel.font = UIFont.boldSystemFont(ofSize: 16)
 		nameLabel.textColor = .black
 		contentView.addSubview(nameLabel)
 		
-		priceLabel.font = UIFont.systemFont(ofSize: 16)
+		// Price Label
+		priceLabel.font = UIFont.systemFont(ofSize: 14)
 		priceLabel.textColor = .systemGreen
 		contentView.addSubview(priceLabel)
 		
-		quantityLabel.font = UIFont.systemFont(ofSize: 16)
-		quantityLabel.textColor = .systemGray
-		contentView.addSubview(quantityLabel)
+		// Available Quantity
+		availableQuantityLabel.font = UIFont.systemFont(ofSize: 12)
+		availableQuantityLabel.textColor = .darkGray
+		contentView.addSubview(availableQuantityLabel)
 		
-		descriptionLabel.font = UIFont.systemFont(ofSize: 14) // Increase font size for better readability
+		// Product Description
+		descriptionLabel.font = UIFont.systemFont(ofSize: 12)
 		descriptionLabel.textColor = .darkGray
 		descriptionLabel.numberOfLines = 2
-		descriptionLabel.lineBreakMode = .byWordWrapping
 		contentView.addSubview(descriptionLabel)
 		
+		// Quantity Stepper
+		quantityStepper.minimumValue = 1
+		quantityStepper.maximumValue = 100
+		quantityStepper.value = 1
+		quantityStepper.addTarget(self, action: #selector(quantityStepperChanged), for: .valueChanged)
+		contentView.addSubview(quantityStepper)
+		
+		// Selected Quantity Label
+		selectedQuantityLabel.font = UIFont.systemFont(ofSize: 14)
+		selectedQuantityLabel.text = "1"
+		selectedQuantityLabel.textColor = .black
+		selectedQuantityLabel.textAlignment = .center
+		contentView.addSubview(selectedQuantityLabel)
+		
+		// Add to Cart Button
+		addToCartButton.setTitle("Add to Cart", for: .normal)
+		addToCartButton.setTitleColor(.white, for: .normal)
+		addToCartButton.backgroundColor = .systemBlue
+		addToCartButton.layer.cornerRadius = 5
+		addToCartButton.addTarget(self, action: #selector(addToCartTapped), for: .touchUpInside)
+		contentView.addSubview(addToCartButton)
+		
+		// Constraints
 		productImageView.snp.makeConstraints { make in
 			make.leading.equalToSuperview().offset(16)
-			make.centerY.equalToSuperview()
-			make.width.height.equalTo(80)
+			make.top.equalToSuperview().offset(8)
+			make.width.height.equalTo(60)
 		}
 		
 		nameLabel.snp.makeConstraints { make in
-			make.top.equalToSuperview().offset(16)
-			make.leading.equalTo(productImageView.snp.trailing).offset(16)
+			make.top.equalToSuperview().offset(8)
+			make.leading.equalTo(productImageView.snp.trailing).offset(12)
 			make.trailing.equalToSuperview().inset(16)
 		}
 		
 		priceLabel.snp.makeConstraints { make in
-			make.top.equalTo(nameLabel.snp.bottom).offset(5)
+			make.top.equalTo(nameLabel.snp.bottom).offset(4)
 			make.leading.equalTo(nameLabel.snp.leading)
 		}
 		
-		quantityLabel.snp.makeConstraints { make in
-			make.top.equalTo(priceLabel.snp.bottom).offset(5)
-			make.leading.equalTo(priceLabel.snp.leading)
+		availableQuantityLabel.snp.makeConstraints { make in
+			make.top.equalTo(priceLabel.snp.bottom).offset(4)
+			make.leading.equalTo(nameLabel.snp.leading)
 		}
 		
 		descriptionLabel.snp.makeConstraints { make in
-			make.top.equalTo(quantityLabel.snp.bottom).offset(5)
+			make.top.equalTo(availableQuantityLabel.snp.bottom).offset(4)
 			make.leading.equalTo(nameLabel.snp.leading)
-			make.trailing.equalToSuperview().inset(8)
-			make.bottom.lessThanOrEqualToSuperview().inset(8)
+			make.trailing.equalToSuperview().inset(16)
+		}
+		
+		quantityStepper.snp.makeConstraints { make in
+			make.top.equalTo(descriptionLabel.snp.bottom).offset(8)
+			make.trailing.equalToSuperview().inset(16)
+		}
+		
+		selectedQuantityLabel.snp.makeConstraints { make in
+			make.centerY.equalTo(quantityStepper.snp.centerY)
+			make.trailing.equalTo(quantityStepper.snp.leading).offset(-8)
+			make.width.equalTo(30)
+		}
+		
+		addToCartButton.snp.makeConstraints { make in
+			make.top.equalTo(quantityStepper.snp.bottom).offset(8)
+			make.trailing.equalToSuperview().inset(16)
+			make.width.equalTo(100)
+			make.height.equalTo(30)
+			make.bottom.equalToSuperview().inset(8) // Ensures the button anchors the bottom
 		}
 	}
 	
-	override func prepareForReuse() {
-		super.prepareForReuse()
-		productImageView.image = nil
-		nameLabel.text = nil
-		priceLabel.text = nil
-		quantityLabel.text = nil
-		descriptionLabel.text = nil
+	@objc private func quantityStepperChanged() {
+		selectedQuantityLabel.text = "\(Int(quantityStepper.value))"
 	}
 	
-	func configure(with product: Product) {
+	@objc private func addToCartTapped() {
+		let selectedQuantity = Int(quantityStepper.value)
+		onAddToCart?(selectedQuantity)
+	}
+	
+	func configure(with product: Products, onAddToCart: @escaping (Int) -> Void) {
 		productImageView.image = UIImage(named: product.imageName)
 		nameLabel.text = product.name
 		priceLabel.text = "\(String(format: "%.2f", product.price)) KZT"
-		quantityLabel.text = "Quantity: \(product.quantity)"
+		availableQuantityLabel.text = "Quantity: \(product.quantity)"
 		descriptionLabel.text = product.description
+		self.onAddToCart = onAddToCart
 	}
 }
