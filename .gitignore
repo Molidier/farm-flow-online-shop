@@ -1,12 +1,4 @@
 .env/
-ffapp/__pycache__/
-ffapp/migrations/__pycache__/
-orders/__pycache__/
-orders/migrations/__pycache__/
-products/__pycache__/
-products/migrations/__pycache__/
-users/__pycache__/
-users/migrations/__pycache__/
 __pycache__/
 venv/
 *.pyc
